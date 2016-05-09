@@ -11,3 +11,6 @@ importFrom(mvtnorm,dmvnorm)
 importFrom(matrixcalc,is.positive.definite)           
 importFrom(quantreg,rq)
 importFrom(psych,tr)
+importFrom(graphics, abline, plot, axis, polygon, lines,
+           title, matplot, matlines, matpoints, par)
+importFrom(stats, optim, qnorm, pnorm, smooth.spline, plot.ts, runif)

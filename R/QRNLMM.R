@@ -18,10 +18,16 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     stop(paste("Expression/s \"",resexp,"\" do/es not defined. More details above.",sep=""))
   }
   
-  
   nj = c(as.data.frame(table(groups))[,2])
   d = countCharOccurrences("fixed",exprNL)/5
   q = countCharOccurrences("random",exprNL)/6
+  
+  if(all(is.na(covar)==FALSE)){
+    if(any(is.na(covar)==TRUE)) stop("There are some NA's values in covar")
+    covar = as.matrix(covar)
+    nc = countCharOccurrences("covar",exprNL)/5
+    if(nc != dim(covar)[2]){stop("The number of declared covariates in exprNL must coincide with the column number of covar.")}
+  }
   
   if(length(p)==1)
   {
@@ -78,6 +84,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     
     nlmodel = eval(parse(text = paste("function(x,fixed,random,covar=NA){resp = ",exprNL,";return(resp)}",sep="")))
     
+    
     #intial values
     if(is.na(beta) == TRUE && is.na(sigma) == TRUE)
     {
@@ -99,6 +106,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     
     #Running the algorithm
     out <- QSAEM_NL(y = y,x = x,nj = nj,initial = initial,exprNL = exprNL,covar = covar,p = p,precision = precision,M=M,pc=cp,MaxIter=MaxIter,beta = beta,sigmae = sigmae,D=Psi,nlmodel=nlmodel,d=d,q=q)
+    
     cat('\n')
     cat('---------------------------------------------------\n')
     cat('Quantile Regression for Nonlinear Mixed Model\n')
@@ -188,6 +196,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
   {
     p = sort(unique(p))
     obj.out  = vector("list", length(p))
+    
     
     ## Verify error at parameters specification
     

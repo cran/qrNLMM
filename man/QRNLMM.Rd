@@ -29,7 +29,7 @@ factor of dimension \eqn{N} specifying the partitions of the data over which the
 expression containing the proposed nonlinear function. It can be of class \code{character} or \code{expression}. It must have a defined structure defined in the \code{details} section in order to be correctly read by the derivate R function \code{deriv}.
 }
   \item{covar}{
-a vector of dimension \eqn{N} containing a second covariate.
+a vector of dimension \eqn{N \times r} where \eqn{r} represents the number of covariates.
 }
  \item{p}{
 unique quantile or a set of quantiles related to the quantile regression.
@@ -65,11 +65,11 @@ Confidence to be used for the Confidence Interval when a grid of quantiles is pr
 
 }
 \details{
-This algorithm performs the SAEM algorithm proposed by Delyon et al. (1999), a stochastic version of the usual EM Algorithm deriving exact maximum likelihood estimates of the fixed-effects and variance components. For the moment just two covariates are allowed, the longitudinal (repeated measures) covariate \code{x} and a second covariate \code{covar}.
+This algorithm performs the SAEM algorithm proposed by Delyon et al. (1999), a stochastic version of the usual EM Algorithm deriving exact maximum likelihood estimates of the fixed-effects and variance components. Covariates are allowed, the longitudinal (repeated measures) coded \code{x} and a set of covariates \code{covar}.
  
 \eqn{About initial values:} Estimation for fixed effects parameters envolves a Newton-Raphson step. In adition, NL models are highly sensitive to initial values. So, we suggest to set of intial values quite good, this based in the parameter interpretation of the proposed NL function.
 
-\eqn{About the nonlinear expression:} For the NL expression \code{exprNL} just the variables \code{x}, \code{covar}, \code{fixed} and \code{random} can be defined. Both \code{x} and \code{covar} represent the covariates defined above. The fixed effects must be declared as \code{fixed[1]}, \code{fixed[2]},..., \code{fixed[d]} representing the first, second and \eqn{d}th fixed effect. Exactly the same for the random effects where the term \code{fixed} should be replace for \code{random}.
+\eqn{About the nonlinear expression:} For the NL expression \code{exprNL} just the variables \code{x}, \code{covar}, \code{fixed} and \code{random} can be defined. Both \code{x} and \code{covar} represent the covariates defined above. The fixed effects must be declared as \code{fixed[1]}, \code{fixed[2]},..., \code{fixed[d]} representing the first, second and \eqn{d}th fixed effect. Exactly the same for the random effects and covariates where the term \code{fixed} should be replace for \code{random} and \code{covar} respectively.
 
 For instance, if we use the exponential nonlinear function with two parameters, each parameter represented by a fixed and a random effect, this will be defined by
 
@@ -84,17 +84,17 @@ or
 \code{exprNL = expression((fixed[1]+random[1])*exp(-(fixed[2]+random[2])*x))}.
 
 
-If we are interested in adding a second covariate in order to explain on of the parameters, the covariate \code{covar} must be included in the model. For example, for the nonlinear function
+If we are interested in adding two covariates in order to explain on of the parameters, the covariates \code{covar[1]} and \code{covar[2]} must be included in the model. For example, for the nonlinear function
 
-\deqn{y_{ij} = (\beta_1 + \beta_3*covar_{ij} + b_1)\exp^{-(\beta_2 + b_2)x_{ij}}}
+\deqn{y_{ij} = (\beta_1 + \beta_3*covar1_{ij} + b_1)\exp^{-(\beta_2 + \beta_4*covar2_{ij} + b_2)x_{ij}}}
 
 the \code{exprNL} should be
 
-\code{exprNL = "(fixed[1]+fixed[3]*covar+random[1])*exp(-(fixed[2]+random[2])*x)"}
+\code{exprNL = "(fixed[1]+fixed[3]*covar[1]+random[1])*exp(-(fixed[2]+fixed[4]*covar[2]+random[2])*x)"}
 
 or
 
-\code{exprNL = expression((fixed[1]+fixed[3]*covar+random[1])*exp(-(fixed[2]+random[2])*x))}.
+\code{exprNL = expression((fixed[1]+fixed[3]*covar[1]+random[1])*exp(-(fixed[2]+fixed[4]*covar[2]+random[2])*x))}.
 
 Note that the mathematical function \code{exp} was used. For derivating the \code{deriv} R function recognizes in the \code{exprNL} expression the arithmetic operators +, -, *, / and ^, and the single-variable functions \code{exp}, \code{log}, \code{sin}, \code{cos}, \code{tan}, \code{sinh}, \code{cosh}, \code{sqrt}, \code{pnorm}, \code{dnorm}, \code{asin}, \code{acos}, \code{atan}, \code{gamma}, \code{lgamma}, \code{digamma} and \code{trigamma}, as well as \code{psigamma} for one or two arguments (but derivative only with respect to the first).
 
@@ -103,7 +103,7 @@ Note that the mathematical function \code{exp} was used. For derivating the \cod
 
 If the convergence graphical summary shows that convergence has not be attained, it's suggested to increase the total number of iterations \code{MaxIter}.
 
-About the cut point parameter \code{cp}, a number between 0 and 1 \eqn{(0 \le cp \le 1)} will assure an initial convergence in distribution to a solution neighborhood for the first \code{cp}*\code{MaxIter} iterations and an almost sure convergence for the rest of the iterations. If you do not know how SAEM algorithm works, this parameter SHOULD NOT be changed.
+About the cut point parameter \code{cp}, a number between 0 and 1 \eqn{(0 \le cp \le 1)} will assure an initial convergence in distribution to a solution neighborhood for the first \code{cp}*\code{MaxIter} iterations and an almost sure convergence for the rest of the iterations. If you do not know how SAEM algorithm works, these parameters SHOULD NOT be changed.
 
 This program uses progress bars that will close when the algorithm ends. They must not be closed before, if not, the algorithm will stop.
 }
@@ -128,10 +128,10 @@ The second element of the list is \code{res}, a list of 12 elements detailed as
 \item{time}{processing time.}
 }
 \references{
-Delyon, B., Lavielle, M. & Moulines, E. (1999). Convergence of a stochastic approximation
-version of the EM algorithm. Annals of Statistics, pages 94-128.
+Galarza, C.M., Castro, LM. Louzada, F. and V. H. Lachos (2016) Quantile Regression for Nonlinear Mixed Effects Models: A Likelihood Based Perspective. Technical Report 8, Universidade Estadual de Campinas. 
+\url{http://www.ime.unicamp.br/sites/default/files/rp08-16.pdf}
 
-Yu, K., & Zhang, J. (2005). A three-parameter asymmetric Laplace distribution and its extension. Communications in Statistics-Theory and Methods, 34(9-10), 1867-1879.
+Delyon, B., Lavielle, M. & Moulines, E. (1999). Convergence of a stochastic approximation version of the EM algorithm. Annals of Statistics, pages 94-128.
 }
 \author{
 Christian E. Galarza <\email{cgalarza88@gmail.com}> and 
@@ -142,7 +142,7 @@ If a grid of quantiles was provided, the result is a list of the same dimension 
 }
 
 \seealso{
-\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link[qrLMM]{QRLMM}}, \code{\link{group.plots}}
+\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link[lqr]{lqr}}, \code{\link[qrLMM]{QRLMM}}, \code{\link{group.plots}}
 }
 \examples{
 \dontrun{

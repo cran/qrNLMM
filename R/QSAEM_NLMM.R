@@ -4,7 +4,9 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   
   n = length(nj)
   N = sum(nj)
-  if(all(is.na(covar)==TRUE)){n.covar = 0}else{n.covar = 1}
+  
+  #NEW CODE
+  if(all(is.na(covar)==TRUE)){n.covar = 0}else{n.covar = dim(covar)[2]}
   
   delta1 = 0.001
   delta2 = precision
@@ -17,15 +19,17 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   ndiag  = (q*(1+q)/2)
   npar   = d+1+ndiag
   
-  exprFX = gsub("|]","",gsub("[|[]","",as.character(exprNL)))
+  ###################################
   
+  exprFX = gsub("|]","",gsub("[|[]","",as.character(exprNL)))
   paste1 = paste("\"fixed",1:d,"\"",sep = "",collapse = ",")
   paste2 = paste("fixed",1:d,sep = "",collapse = ",")
-  paste3 = ifelse(n.covar==0,"","covar")
+  pasteA = paste("covar",1:n.covar,sep = "",collapse = ",")
+  paste3 = ifelse(n.covar==0,"",pasteA)
   paste4 = ifelse(n.covar==0,paste("x",paste2,sep =","),paste("x",paste2,paste3,sep =","))
   paste5 = paste("random",1:q,sep = "",collapse = ",")
   paste6 = paste("deriv( ~ ",exprFX,",c(",paste1,"),function(",paste(paste4,",",paste5,sep = ""),"){})",sep = "")
-  dd = eval(parse(text = paste6))
+  dd     = eval(parse(text = paste6))
   
   critval  = 1
   count    = 0
@@ -67,7 +71,6 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
     IE     = 0
     
     x = as.matrix(x)
-    covar = as.matrix(covar)
     
     for (j in 1:n)
     { 

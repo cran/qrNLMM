@@ -24,11 +24,8 @@ Victor H. Lachos <\email{hlachos@ime.unicamp.br}>
 Maintainer: Christian E. Galarza <\email{cgalarza88@gmail.com}>
 }
 \references{
-Delyon, B., Lavielle, M. & Moulines, E. (1999). Convergence of a stochastic approximation
-version of the EM algorithm. Annals of Statistics, pages 94-128.
-
-Koenker, R., Machado, J. (1999). Goodness of fit and related inference processes for quantile
-regression. J. Amer. Statist. Assoc. 94(3):1296-1309.
+Galarza, C.M., Castro, LM. Louzada, F. and V. H. Lachos (2016) Quantile Regression for Nonlinear Mixed Effects Models: A Likelihood Based Perspective. Technical Report 8, Universidade Estadual de Campinas. 
+\url{http://www.ime.unicamp.br/sites/default/files/rp08-16.pdf}
 
 Yu, K. & Moyeed, R. (2001). Bayesian quantile regression. Statistics & Probability Letters, 54(4), 437-447.
 
@@ -39,7 +36,7 @@ Yu, K., & Zhang, J. (2005). A three-parameter asymmetric Laplace distribution an
 \keyword{quantile}
 \keyword{ALD}
 \seealso{\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link{QRNLMM}},
-\code{\link[qrLMM]{QRLMM}}, \code{\link{group.plots}}
+\code{\link[lqr]{lqr}}, \code{\link[qrLMM]{QRLMM}}, \code{\link{group.plots}}
 }
 \examples{
 #See examples for the QRNLMM function linked above.

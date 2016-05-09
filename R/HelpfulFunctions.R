@@ -166,6 +166,7 @@ countCharOccurrences <- function(char, s) {
 
 validate_str = function(prueba)
 {
+  prueba = gsub("\n","   ",prueba)
   prueba = gsub("[[:punct:]]","   ",gsub("[|[[:digit:]|]]","    ",prueba))
   prueba = gsub("\\d","   ",prueba)
   prueba = paste("  ",prueba,"  ",sep = "")
