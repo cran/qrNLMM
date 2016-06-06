@@ -29,7 +29,7 @@ factor of dimension \eqn{N} specifying the partitions of the data over which the
 expression containing the proposed nonlinear function. It can be of class \code{character} or \code{expression}. It must have a defined structure defined in the \code{details} section in order to be correctly read by the derivate R function \code{deriv}.
 }
   \item{covar}{
-a vector of dimension \eqn{N \times r} where \eqn{r} represents the number of covariates.
+a matrix of dimension \eqn{N \times r} where \eqn{r} represents the number of covariates.
 }
  \item{p}{
 unique quantile or a set of quantiles related to the quantile regression.
@@ -86,7 +86,8 @@ or
 
 If we are interested in adding two covariates in order to explain on of the parameters, the covariates \code{covar[1]} and \code{covar[2]} must be included in the model. For example, for the nonlinear function
 
-\deqn{y_{ij} = (\beta_1 + \beta_3*covar1_{ij} + b_1)\exp^{-(\beta_2 + \beta_4*covar2_{ij} + b_2)x_{ij}}}
+\deqn{y_{ij} = (\beta_1 + \beta_3*covar1_{ij} + b_1)\exp^{-(\beta_2 + \beta_4*
+covar2_{ij} + b_2)x_{ij}}}
 
 the \code{exprNL} should be
 
@@ -94,7 +95,8 @@ the \code{exprNL} should be
 
 or
 
-\code{exprNL = expression((fixed[1]+fixed[3]*covar[1]+random[1])*exp(-(fixed[2]+fixed[4]*covar[2]+random[2])*x))}.
+\code{exprNL = expression((fixed[1]+fixed[3]*covar[1]+random[1])*exp(-(fixed[2]+
+fixed[4]*covar[2]+random[2])*x))}.
 
 Note that the mathematical function \code{exp} was used. For derivating the \code{deriv} R function recognizes in the \code{exprNL} expression the arithmetic operators +, -, *, / and ^, and the single-variable functions \code{exp}, \code{log}, \code{sin}, \code{cos}, \code{tan}, \code{sinh}, \code{cosh}, \code{sqrt}, \code{pnorm}, \code{dnorm}, \code{asin}, \code{acos}, \code{atan}, \code{gamma}, \code{lgamma}, \code{digamma} and \code{trigamma}, as well as \code{psigamma} for one or two arguments (but derivative only with respect to the first).
 
@@ -129,7 +131,7 @@ The second element of the list is \code{res}, a list of 12 elements detailed as
 }
 \references{
 Galarza, C.M., Castro, LM. Louzada, F. and V. H. Lachos (2016) Quantile Regression for Nonlinear Mixed Effects Models: A Likelihood Based Perspective. Technical Report 8, Universidade Estadual de Campinas. 
-\url{http://www.ime.unicamp.br/sites/default/files/rp08-16.pdf}
+\url{http://www.ime.unicamp.br/sites/default/files/rp08-2016.pdf}
 
 Delyon, B., Lavielle, M. & Moulines, E. (1999). Convergence of a stochastic approximation version of the EM algorithm. Annals of Statistics, pages 94-128.
 }
@@ -190,7 +192,7 @@ covar = c(Variety)-1    #factor genotype (0=Forrest, 1=Plan Introduction)
 
 #Expression for the three parameter logistic curve with a covariate
 
-exprNL = expression((fixed[1]+(fixed[4]*covar)+random[1])/
+exprNL = expression((fixed[1]+(fixed[4]*covar[1])+random[1])/
                     (1 + exp(((fixed[2]+random[2])- x)/(fixed[3]+random[3]))))
 
 #Initial values for fixed effects

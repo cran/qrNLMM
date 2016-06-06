@@ -25,7 +25,7 @@ Maintainer: Christian E. Galarza <\email{cgalarza88@gmail.com}>
 }
 \references{
 Galarza, C.M., Castro, LM. Louzada, F. and V. H. Lachos (2016) Quantile Regression for Nonlinear Mixed Effects Models: A Likelihood Based Perspective. Technical Report 8, Universidade Estadual de Campinas. 
-\url{http://www.ime.unicamp.br/sites/default/files/rp08-16.pdf}
+\url{http://www.ime.unicamp.br/sites/default/files/rp08-2016.pdf}
 
 Yu, K. & Moyeed, R. (2001). Bayesian quantile regression. Statistics & Probability Letters, 54(4), 437-447.
 

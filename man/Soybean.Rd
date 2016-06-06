@@ -83,7 +83,7 @@ covar = c(Variety)-1    #factor genotype (0=Forrest, 1=Plan Introduction)
 
 #Expression for the three parameter logistic curve with a covariate
 
-exprNL = expression((fixed[1]+(fixed[4]*covar)+random[1])/
+exprNL = expression((fixed[1]+(fixed[4]*covar[1])+random[1])/
                     (1 + exp(((fixed[2]+random[2])- x)/(fixed[3]+random[3]))))
 
 #Initial values for fixed effects

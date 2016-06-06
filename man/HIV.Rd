@@ -47,7 +47,7 @@ covar = cd4/100            #covariate
 #Full Nonlinear expression
 exprNL = expression(log(exp(fixed[1]+random[1])*exp(-(fixed[2]+random[2])*x)+
                     exp(fixed[3]+random[3])*exp(-(fixed[4]+random[4]+fixed[5]
-                    *covar)*x))/log(10))
+                    *covar[1])*x))/log(10))
 
 #Initial values for fixed effects
 initial = c(12,31,6,-2,0.6)

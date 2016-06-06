@@ -1,12 +1,12 @@
-c66681324ccd3d4add3bb319e6f6f540 *DESCRIPTION
+cb49dc6d6f1744e7c6eec5db4d39c36e *DESCRIPTION
 333e0a2615d2cd03491f31a964b7155d *NAMESPACE
 aba05109a24917dd0889845666a49a7c *R/HelpfulFunctions.R
 cb310c03543707b51c3dae93d8d7dad6 *R/QRNLMM.R
 0a3e28783c4f6a7aca660382da218bec *R/QSAEM_NLMM.R
 116b028951e7072d168f3937897d5d22 *data/HIV.txt.gz
 e12cc6c577afd41a432173ec69fac3e7 *data/Soybean.txt.gz
-8cbf0fc8a1155efe3f2207dfcbd23f51 *man/HIV.Rd
-f03935e6bcfd7ca7a5a168784ee93eae *man/QRNLMM.Rd
-24020cb4f6f0ffe5e58e8de5097b60bc *man/Soybean.Rd
+8e0b06d40746cce7fdbf12cbea712234 *man/HIV.Rd
+16f472af6958d8cdc231b5df1559b7cf *man/QRNLMM.Rd
+4e4736cc6a80afa2476ca87a8be9e0c9 *man/Soybean.Rd
 f1aced8f25e5a20380b511ff97f79b97 *man/group.plots.Rd
-442fc030347fe4331b978425c906c1c4 *man/qrNLMM-package.Rd
+569bfeb393aacbf392ba3c6813801666 *man/qrNLMM-package.Rd
