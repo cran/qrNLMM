@@ -119,6 +119,7 @@ The second element of the list is \code{res}, a list of 12 elements detailed as
 \item{criteria}{attained criteria value.}
 \item{nlmodel}{the proposed nonlinear function.}
 \item{beta}{fixed effects estimates.}
+\item{weights}{random effects weights (\eqn{b_i}).}
 \item{sigma}{scale parameter estimate for the error term.}
 \item{Psi}{Random effects variance-covariance estimate matrix.}
 \item{SE}{Standard Error estimates.}
@@ -170,18 +171,23 @@ initial = c(max(y),0.6*max(y),0.73*max(y))
 #A median regression (by default)
 median_reg = QRNLMM(y,x,Plot,initial,exprNL)
 
-#Assing the fit
+#Assesing the fit
 
 fxd     = median_reg$res$beta
 nlmodel = median_reg$res$nlmodel
 seqc    = seq(min(x),max(x),length.out = 500)
 
 group.plot(x = Time,y = weight,groups = Plot,type="l",
-             main="Soybean profiles",xlab="time (days)",
-             ylab="mean leaf weight (gr)",col="gray")
-             
+           main="Soybean profiles",xlab="time (days)",
+           ylab="mean leaf weight (gr)",col="gray")
+
+for(i in 1:48)
+{
+  lines(seqc,nlmodel(x = seqc,fixed = fxd,random = weights[i,]),lty=2)
+}
+
 lines(seqc,nlmodel(x = seqc,fixed = fxd,random = rep(0,3)),
-      lwd=2,col="blue")             
+      lwd=3,col="red")          
 
 #########################################
 #A model for compairing the two genotypes

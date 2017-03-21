@@ -136,7 +136,12 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     cat('\n')
     cat('sigma =',round(out$res$sigmae,5),'\n')
     cat('\n')
-    cat('Random effects Variance-Covariance Matrix matrix \n')
+        cat('Random effects \n')
+    cat('\n')
+    cat('i) Weights \n')
+    print(round(out$res$weights,5))
+    cat('\n')
+    cat('ii) Variance-Covariance Matrix \n')
     dimnames(out$res$D) <- list(namesz,namesz)
     print(round(out$res$D,5))
     cat('\n')
@@ -187,7 +192,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     }
     par(mfrow=c(1,1))
     par(mar= c(5, 4, 4, 2) + 0.1)
-    res     = list(iter = out$res$iter,criteria = out$res$criterio,nlmodel = out$res$nlmodel,beta = out$res$beta,sigma= out$res$sigmae,Psi = out$res$D,SE=out$res$EP,table = out$res$table,loglik=out$res$loglik,AIC=out$res$AIC,BIC=out$res$BIC,HQ=out$res$HQ,time = out$res$time)
+    res     = list(iter = out$res$iter,criteria = out$res$criterio,nlmodel = out$res$nlmodel,beta = out$res$beta,weights = out$res$weights,sigma= out$res$sigmae,Psi = out$res$D,SE=out$res$EP,table = out$res$table,loglik=out$res$loglik,AIC=out$res$AIC,BIC=out$res$BIC,HQ=out$res$HQ,time = out$res$time)
     obj.out = list(conv=out$conv,res = res)
     class(obj.out)  =  "QRNLMM"
     return(obj.out)  
@@ -308,7 +313,12 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       cat('\n')
       cat('sigma =',round(out$res$sigmae,5),'\n')
       cat('\n')
-      cat('Random effects Variance-Covariance Matrix matrix \n')
+      cat('Random effects \n')
+      cat('\n')
+      cat('i) Weights \n')
+      print(round(out$res$weights,5))
+      cat('\n')
+      cat('ii) Variance-Covariance Matrix \n')
       dimnames(out$res$D) <- list(namesz,namesz)
       print(round(out$res$D,5))
       cat('\n')
@@ -337,7 +347,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       cat('\n')
       cat("Processing time =",out$res$time,units(out$res$time))
       cat('\n')
-      res      = list(iter = out$res$iter,criteria = out$res$criterio,nlmodel = out$res$nlmodel,beta = out$res$beta,sigma= out$res$sigmae,Psi = out$res$D,SE=out$res$EP,table = out$res$table,loglik=out$res$loglik,AIC=out$res$AIC,BIC=out$res$BIC,HQ=out$res$HQ,time = out$res$time)
+      res      = list(iter = out$res$iter,criteria = out$res$criterio,nlmodel = out$res$nlmodel,beta = out$res$beta,weights = out$res$weights,sigma= out$res$sigmae,Psi = out$res$D,SE=out$res$EP,table = out$res$table,loglik=out$res$loglik,AIC=out$res$AIC,BIC=out$res$BIC,HQ=out$res$HQ,time = out$res$time)
       obj.outk = list(conv=out$conv,res = res)
       obj.out[[k]] = obj.outk
       
@@ -397,6 +407,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       }
     }
     title("Point estimative and 95% CI for model parameters", outer=TRUE)
+
     
     if(show.convergence=="TRUE")
     {

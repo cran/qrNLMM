@@ -188,7 +188,7 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   end.time <- Sys.time()
   time.taken <- end.time - start.time
   
-  res     = list(quantile = p,nlmodel = nlmodel,iter = count,criterio = max(criterio),beta = beta,sigmae= sigmae,D = D,EP=EP,table = table,loglik=loglik,AIC=AIC,BIC=BIC,HQ=HQ,time = time.taken)
+  res     = list(quantile = p,nlmodel = nlmodel,iter = count,criterio = max(criterio),beta = beta,weights=SAEM_bi[count+1,,],sigmae= sigmae,D = D,EP=EP,table = table,loglik=loglik,AIC=AIC,BIC=BIC,HQ=HQ,time = time.taken)
   conv    = list(teta = tetam[,1:count],EPV = EPV[,1:count])
   obj.out = list(conv=conv,res = res)
   
