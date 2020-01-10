@@ -79,7 +79,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     if(is.na(Psi) == FALSE)
     {  
       if(ncol(as.matrix(Psi)) != q | nrow(as.matrix(Psi)) != q) stop("Psi must be a square matrix of dims equal to the number of random effects declared in exprNL.")
-      if(is.positive.definite(Psi)==FALSE) stop("Psi must be a square symmetrical real posite definite matrix.") 
+      if(det(Psi)<=0) stop("Psi must be a square symmetrical real posite definite matrix.") 
     }
     
     nlmodel = eval(parse(text = paste("function(x,fixed,random,covar=NA){resp = ",exprNL,";return(resp)}",sep="")))
@@ -253,7 +253,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     if(is.na(Psi) == FALSE)
     {  
       if(ncol(as.matrix(Psi)) != q | nrow(as.matrix(Psi)) != q) stop("Psi must be a square matrix of dims equal to the number of random effects declared in exprNL.")
-      if(is.positive.definite(Psi)==FALSE) stop("Psi must be a square symmetrical real posite definite matrix.") 
+      if(det(Psi)<=0) stop("Psi must be a square symmetrical real posite definite matrix.") 
     }
     
     nlmodel = eval(parse(text = paste("function(x,fixed,random,covar=NA){resp = ",exprNL,";return(resp)}",sep="")))
