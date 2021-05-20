@@ -74,6 +74,9 @@ group.plot(x = Time,y = weight,groups = Plot,type="l",
 lines(seqc,nlmodel(x = seqc,fixed = fxd,random = rep(0,3)),
       lwd=2,col="blue")             
 
+#Histogram for residuals
+hist(median_reg$res$residuals)
+
 #########################################
 #A model for compairing the two genotypes
 

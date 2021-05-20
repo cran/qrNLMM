@@ -192,7 +192,33 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     }
     par(mfrow=c(1,1))
     par(mar= c(5, 4, 4, 2) + 0.1)
-    res     = list(iter = out$res$iter,criteria = out$res$criterio,nlmodel = out$res$nlmodel,beta = out$res$beta,weights = out$res$weights,sigma= out$res$sigmae,Psi = out$res$D,SE=out$res$EP,table = out$res$table,loglik=out$res$loglik,AIC=out$res$AIC,BIC=out$res$BIC,HQ=out$res$HQ,time = out$res$time)
+    
+    fitted.values = rep(NA,sum(nj))
+    
+    for (j in 1:length(nj)){ 
+      pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
+      rand = out$res$weights[j,]
+      fitted.values[pos] = nlmodel(x = x[pos],fixed = out$res$beta,random = rand)
+    }
+    
+    res      = list(iter = out$res$iter,
+                    criteria = out$res$criterio,
+                    nlmodel = out$res$nlmodel,
+                    beta = out$res$beta,
+                    weights = out$res$weights,
+                    sigma= out$res$sigmae,
+                    Psi = out$res$D,
+                    SE=out$res$EP,
+                    table = out$res$table,
+                    loglik=out$res$loglik,
+                    AIC=out$res$AIC,
+                    BIC=out$res$BIC,
+                    HQ=out$res$HQ,
+                    fitted.values = fitted.values,
+                    residuals = fitted.values - y,
+                    time = out$res$time)
+    
+    
     obj.out = list(conv=out$conv,res = res)
     class(obj.out)  =  "QRNLMM"
     return(obj.out)  
@@ -347,7 +373,32 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       cat('\n')
       cat("Processing time =",out$res$time,units(out$res$time))
       cat('\n')
-      res      = list(iter = out$res$iter,criteria = out$res$criterio,nlmodel = out$res$nlmodel,beta = out$res$beta,weights = out$res$weights,sigma= out$res$sigmae,Psi = out$res$D,SE=out$res$EP,table = out$res$table,loglik=out$res$loglik,AIC=out$res$AIC,BIC=out$res$BIC,HQ=out$res$HQ,time = out$res$time)
+      
+      fitted.values = rep(NA,sum(nj))
+      
+      for (j in 1:length(nj)){ 
+        pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
+        rand = out$res$weights[j,]
+        fitted.values[pos] = nlmodel(x = x[pos],fixed = out$res$beta,random = rand)
+      }
+    
+      res      = list(iter = out$res$iter,
+                      criteria = out$res$criterio,
+                      nlmodel = out$res$nlmodel,
+                      beta = out$res$beta,
+                      weights = out$res$weights,
+                      sigma= out$res$sigmae,
+                      Psi = out$res$D,
+                      SE=out$res$EP,
+                      table = out$res$table,
+                      loglik=out$res$loglik,
+                      AIC=out$res$AIC,
+                      BIC=out$res$BIC,
+                      HQ=out$res$HQ,
+                      fitted.values = fitted.values,
+                      residuals = fitted.values - y,
+                      time = out$res$time)
+      
       obj.outk = list(conv=out$conv,res = res)
       obj.out[[k]] = obj.outk
       

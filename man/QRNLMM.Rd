@@ -128,11 +128,13 @@ The second element of the list is \code{res}, a list of 12 elements detailed as
 \item{AIC}{Akaike information criterion.}
 \item{BIC}{Bayesian information criterion.}
 \item{HQ}{Hannan-Quinn information criterion.}
+\item{fitted.values}{vector containing the fitted values}
+\item{residuals}{vector containing the residuals.}
 \item{time}{processing time.}
 }
 \references{
-Galarza, C.M., Castro, LM. Louzada, F. and V. H. Lachos (2016) Quantile Regression for Nonlinear Mixed Effects Models: A Likelihood Based Perspective. Technical Report 8, Universidade Estadual de Campinas. 
-\url{http://www.ime.unicamp.br/sites/default/files/rp08-2016.pdf}
+Galarza, C.E., Castro, L.M., Louzada, F. et al. (2020) Quantile regression for nonlinear mixed effects models: a likelihood based perspective. Stat Papers 61, 1281-1307.
+\doi{10.1007/s00362-018-0988-y}
 
 Delyon, B., Lavielle, M. & Moulines, E. (1999). Convergence of a stochastic approximation version of the EM algorithm. Annals of Statistics, pages 94-128.
 }
