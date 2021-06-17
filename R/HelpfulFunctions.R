@@ -161,6 +161,29 @@ countCharOccurrences <- function(char, s) {
   return (nchar(s) - nchar(s2))
 }
 
+countCharOccurrences2 <- function(char, s) {
+  ll = nchar(char)
+  s2 <- gsub(char,"",s,fixed = TRUE)
+  return ((nchar(s) - nchar(s2))/ll)
+}
+
+countall = function(s){
+  frecF = rep(NA,10)
+  frecR = rep(NA,10)
+  frecC = rep(NA,10)
+  for(i in 1:10){
+    strF = paste0("fixed[",i,"]")
+    strR = paste0("random[",i,"]")
+    strC = paste0("covar[",i,"]")
+    frecF[i] = countCharOccurrences2(strF,s)
+    frecR[i] = countCharOccurrences2(strR,s)
+    frecC[i] = countCharOccurrences2(strC,s)
+  }
+  return(c(sum(frecF > 0),sum(frecR > 0),sum(frecC > 0)))
+}
+
+#countfixedrandom(exprNL)
+
 ###############################################################################
 ###############################################################################
 

@@ -1,9 +1,9 @@
-96c9e8423bab4def139cf31a1cb395e9 *DESCRIPTION
+7f02a63dd07e387101a2c058f230cf09 *DESCRIPTION
 54af0b4e22d90adb259ad4257a44964e *NAMESPACE
-aba05109a24917dd0889845666a49a7c *R/HelpfulFunctions.R
-ca9a12a91a1d1ea6c1957c5eb68d4af5 *R/QRNLMM.R
+79ffeee31404a172ce4fee59af477536 *R/HelpfulFunctions.R
+ce4aab4d20dfbc74edc3d3e81aecea12 *R/QRNLMM.R
 a7c4e3a7c2d20c536b6e5ba2c636a74c *R/QSAEM_NLMM.R
-3d0fab1cfe78d96f03b4d3a4880e1f78 *build/partial.rdb
+3323d6fba0d1dca9a0d942849782735c *build/partial.rdb
 d4d959802f91bb10b919b20fe937ff4c *data/HIV.txt
 3d5389d2f084b863c7d9cb53dd38f985 *data/Soybean.txt
 8e0b06d40746cce7fdbf12cbea712234 *man/HIV.Rd

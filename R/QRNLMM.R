@@ -18,14 +18,16 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     stop(paste("Expression/s \"",resexp,"\" do/es not defined. More details above.",sep=""))
   }
   
-  nj = c(as.data.frame(table(groups))[,2])
-  d = countCharOccurrences("fixed",exprNL)/5
-  q = countCharOccurrences("random",exprNL)/6
+  nj   = c(as.data.frame(table(groups))[,2])
+  dqnc = countall(exprNL)
+  d    = dqnc[1]
+  q    = dqnc[2]
+  nc   = dqnc[3]
   
   if(all(is.na(covar)==FALSE)){
     if(any(is.na(covar)==TRUE)) stop("There are some NA's values in covar")
     covar = as.matrix(covar)
-    nc = countCharOccurrences("covar",exprNL)/5
+    
     if(nc != dim(covar)[2]){stop("The number of declared covariates in exprNL must coincide with the column number of covar.")}
   }
   
@@ -197,7 +199,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     
     for (j in 1:length(nj)){ 
       pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
-      rand = out$res$weights[j,]
+      rand = as.matrix(out$res$weights)[j,]
       fitted.values[pos] = nlmodel(x = x[pos],fixed = out$res$beta,random = rand)
     }
     
@@ -378,7 +380,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       
       for (j in 1:length(nj)){ 
         pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
-        rand = out$res$weights[j,]
+        rand = as.matrix(out$res$weights)[j,]
         fitted.values[pos] = nlmodel(x = x[pos],fixed = out$res$beta,random = rand)
       }
     
