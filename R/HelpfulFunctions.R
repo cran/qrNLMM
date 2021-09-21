@@ -1,3 +1,19 @@
+
+sqrtm <- function(A)
+{
+  if(length(A)==1)
+    Asqrt=sqrt(A)
+  else{
+    sva <- svd(A)
+    if (min(sva$d)>=0){
+      Asqrt <- sva$u%*%diag(sqrt(sva$d))%*%t(sva$v)  # svd e decomposi??o espectral
+    }else{
+      stop("Matrix square root is not defined")
+    }
+  }
+  return(as.matrix(Asqrt))
+}
+
 ##########################################################################################
 #PAUSE BETWEEN PLOTS
 ##########################################################################################
@@ -31,6 +47,54 @@ densbiv=function(j,bi,beta,sigmae,D,p,y1,x1,cov1,q=q,nj=nj,nlmodel=nlmodel)
   dens=as.numeric(dprod*dmvnorm(x=as.numeric(bi),mean=matrix(rep(0,q),q,1),sigma=D))
   return(dens)
 }
+
+
+
+####################################################################
+####################################################################
+
+
+densbiv3 =function(j,bi,beta,sigmae,D,p,y1,x1,cov1,q=q,nj=nj,nlmodel=nlmodel)
+{
+  bi = matrix(bi,nrow = q,ncol = 1)
+  dprod = 1
+  for(k in 1:nj[j])
+  {
+    dprod = dprod * (dALD(y=y1[k],mu=nlmodel(x1[k],beta,bi,cov1[k,,drop = FALSE]),sigma=sigmae,p=p))
+  }
+  dens=as.numeric(dprod*dmvnorm(x=as.numeric(bi),mean=matrix(rep(0,q),q,1),sigma=D))
+  return(dens)
+}
+
+####################################################################
+####################################################################
+
+MHbi3 = function(j,M,y1,x1,cov1,bi,bibi,d,q,p,nj,beta=beta,sigmae=sigmae,D=D,nlmodel=nlmodel)
+{  
+  E_bi = bi
+  V_bi = bibi - E_bi%*%t(E_bi)
+  GEN = matrix(NA,nrow=q,ncol=(M+1))
+  count = 1
+  GEN[,1]=rmvnorm(n = 1,mean = E_bi,sigma=V_bi)
+  
+  while(count <= M)
+  {
+    cand = rmvnorm(n=1,mean=as.vector(GEN[,count]),sigma=V_bi)
+    
+    c1 = densbiv3(j=j,bi=cand,beta=beta,sigmae=sigmae,D=D,p=p,y1,x1,cov1,q,nj,nlmodel=nlmodel)*dmvnorm(x=GEN[,count],mean=as.vector(cand),sigma=V_bi)
+    c2 = densbiv3(j=j,bi=GEN[,count],beta=beta,sigmae=sigmae,D=D,p=p,y1,x1,cov1,q,nj,nlmodel=nlmodel)*dmvnorm(x=as.vector(cand),mean=as.vector(GEN[,count]),sigma=V_bi)
+    alfa = c1/c2
+    
+    if(is.nan(alfa)+0==1) {alfa=0.0001}
+    if (runif(1) < min(alfa, 1))
+    {
+      count = count + 1
+      GEN[,count] = cand
+    }
+  }
+  return(GEN[,2:(M+1)])
+}
+
 
 ####################################################################
 ####################################################################
@@ -181,6 +245,24 @@ countall = function(s){
   }
   return(c(sum(frecF > 0),sum(frecR > 0),sum(frecC > 0)))
 }
+
+
+
+countall2 = function(s){
+  frecF = rep(NA,10)
+  frecR = rep(NA,10)
+  frecC = rep(NA,10)
+  for(i in 1:10){
+    strF = paste0("fixed[",i,"]")
+    strR = paste0("random[",i,"]")
+    strC = paste0("covar[,",i,"]")
+    frecF[i] = countCharOccurrences2(strF,s)
+    frecR[i] = countCharOccurrences2(strR,s)
+    frecC[i] = countCharOccurrences2(strC,s)
+  }
+  return(c(sum(frecF > 0),sum(frecR > 0),sum(frecC > 0)))
+}
+
 
 #countfixedrandom(exprNL)
 

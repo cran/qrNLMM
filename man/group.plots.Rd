@@ -30,8 +30,8 @@ additional graphical arguments passed to \code{\link[graphics]{matplot}}. See \c
 }
 }
 \author{
-Christian E. Galarza <\email{cgalarza88@gmail.com}> and 
-Victor H. Lachos <\email{hlachos@ime.unicamp.br}>
+Christian E. Galarza <\email{chedgala@espol.edu.ec}> and 
+Victor H. Lachos <\email{hlachos@uconn.edu}>
 }
 \seealso{\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link{QRNLMM}},
 \code{\link[qrLMM]{QRLMM}}

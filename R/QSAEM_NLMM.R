@@ -57,8 +57,20 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   
   for(j in 1:n){SAEM_bb[count+1,j,,] = diag(q)}
   
-  pb = tkProgressBar(title = "QRNLMM via SAEM", min = 0,max = MaxIter, width = 300)
-  setTkProgressBar(pb, 0, label=paste("Iter ",0,"/",MaxIter,"     -     ",0,"% done",sep = ""))
+  
+  # Progress bar ------------------------------------------------------------
+  
+  # pb = tkProgressBar(title = "QRNLMM via SAEM", min = 0,max = MaxIter, width = 300)
+  # setTkProgressBar(pb, 0, label=paste("Iter ",0,"/",MaxIter,"     -     ",0,"% done",sep = ""))
+  # 
+  
+  pb <- progress_bar$new(
+    format = ":what [:bar] :percent eta: :eta",
+    total = MaxIter, clear = FALSE,
+    width= 60, show_after = 0)
+  
+  pb$tick(len = -1,tokens = list(what = "Working..."))
+  
   
   while(critval < 3)
   {
@@ -91,8 +103,13 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
       Mbb2   = array(NA,dim = c(q,q,M))
       Hbeta  = array(NA,dim = c(d,d,M))
       
-      bmetro = matrix(MHbi2(j=j,M=M,y1,x1,cov1,bi=as.matrix(SAEM_bi[count,j,]),bibi=as.matrix(SAEM_bb[count,j,,]),d=d,q=q,p=p,nj=nj,beta=beta,sigmae=sigmae,D=D,nlmodel=nlmodel),q,M)
-            
+      bmetro = matrix(MHbi2(j=j,M=M,y1,x1,cov1,
+                            bi=as.matrix(SAEM_bi[count,j,]),
+                            bibi=as.matrix(SAEM_bb[count,j,,]),
+                            d=d,q=q,p=p,nj=nj,
+                            beta=beta,sigmae=sigmae,D=D,
+                            nlmodel=nlmodel),q,M)
+      
       paste6 = paste("beta[",1:d,"]",sep = "",collapse = ",")
       paste7 = ifelse(n.covar==0,"",paste(",",paste("cov1[,",1:n.covar,"]",sep = "",collapse = ","),sep=""))
       paste8 = paste("attr(dd(x1,",paste6,paste7,",",paste(rep(0,q),sep="",collapse = ","),"),\"gradient\")",sep = "")
@@ -170,7 +187,10 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
     #PRUEBAS
     #############################################################################
     tetam[,count] = teta
-    setTkProgressBar(pb, count, label=paste("Iter ",count,"/",MaxIter,"     -     ",round(count/MaxIter*100,0),"% done",sep = ""))
+    
+    #setTkProgressBar(pb, count, label=paste("Iter ",count,"/",MaxIter,"     -     ",round(count/MaxIter*100,0),"% done",sep = ""))
+    
+    pb$tick(tokens = list(what = paste0("Quantile ",p,": Working...")))
     
     if  (count == MaxIter){critval=10}
   }
@@ -188,21 +208,42 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   end.time <- Sys.time()
   time.taken <- end.time - start.time
   
-  res     = list(quantile = p,nlmodel = nlmodel,iter = count,criterio = max(criterio),beta = beta,weights=SAEM_bi[count+1,,],sigmae= sigmae,D = D,EP=EP,table = table,loglik=loglik,AIC=AIC,BIC=BIC,HQ=HQ,time = time.taken)
+  res     = list(quantile = p,nlmodel = nlmodel,iter = count,
+                 criterio = max(criterio),beta = beta,
+                 weights=SAEM_bi[count+1,,],
+                 sigmae= sigmae,D = D,EP=EP,
+                 table = table,
+                 loglik=loglik,AIC=AIC,BIC=BIC,HQ=HQ,
+                 time = time.taken)
   conv    = list(teta = tetam[,1:count],EPV = EPV[,1:count])
   obj.out = list(conv=conv,res = res)
   
   if  (count == MaxIter)
   {
-    setTkProgressBar(pb, MaxIter, label=paste("MaxIter reached ",count,"/",MaxIter,"    -    100 % done",sep = ""))
+    #setTkProgressBar(pb, MaxIter, label=paste("MaxIter reached ",count,"/",MaxIter,"    -    100 % done",sep = ""))
     #Sys.sleep(2)
-    close(pb)
-  }
-  else
-  {
-    setTkProgressBar(pb, MaxIter, label=paste("Convergence at Iter ",count,"/",MaxIter,"    -    100 % done",sep = ""))
+    #close(pb)
+    
+    pb$tick(MaxIter,tokens = list(what = 
+                                    paste0("Quantile ",p,": MaxIter reached!")))
+    
+    Sys.sleep(1/20)
+    
+    cat("\n")
+    #cat("\n")
+    
+  }else{
+    #setTkProgressBar(pb, MaxIter, label=paste("Convergence at Iter ",count,"/",MaxIter,"    -    100 % done",sep = ""))
     #Sys.sleep(2)
-    close(pb)
+    #close(pb)
+    
+    pb$tick(MaxIter,tokens = list(what = 
+                                    paste0("Quantile ",p,": Convergence reached!")))
+    Sys.sleep(1/20)
+    
+    cat("\n")
+    #cat("\n")
+    
   }
   
   class(obj.out)  =  "QSAEM_NL"

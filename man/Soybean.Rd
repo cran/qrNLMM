@@ -78,7 +78,7 @@ lines(seqc,nlmodel(x = seqc,fixed = fxd,random = rep(0,3)),
 hist(median_reg$res$residuals)
 
 #########################################
-#A model for compairing the two genotypes
+#A model for comparing the two genotypes (with covariates)
 
 y     = weight          #response
 x     = Time            #time

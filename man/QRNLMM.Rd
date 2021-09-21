@@ -9,7 +9,7 @@ Performs a quantile regression for a NLMEM using the Stochastic-Approximation of
 }
 \usage{
 QRNLMM(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxIter=500,
-       M=20,cp=0.25,beta=NA,sigma=NA,Psi=NA,show.convergence=TRUE,CI=95)
+       M=20,cp=0.25,beta=NA,sigma=NA,Psi=NA,show.convergence=TRUE,CI=95,verbose=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -62,7 +62,9 @@ if \code{TRUE}, it will show a graphical summary for the convergence of the esti
   \item{CI}{
 Confidence to be used for the Confidence Interval when a grid of quantiles is provided. Default=95.
 }
-
+  \item{verbose}{
+if \code{TRUE}, an output summary is printed.
+}
 }
 \details{
 This algorithm performs the SAEM algorithm proposed by Delyon et al. (1999), a stochastic version of the usual EM Algorithm deriving exact maximum likelihood estimates of the fixed-effects and variance components. Covariates are allowed, the longitudinal (repeated measures) coded \code{x} and a set of covariates \code{covar}.
@@ -113,8 +115,9 @@ This program uses progress bars that will close when the algorithm ends. They mu
 The function returns a list with two objects
 \item{conv}{A two elements list with the matrices \code{teta} and \code{se} containing the point estimates and standard error estimate for all parameters along all iterations.}
 
-The second element of the list is \code{res}, a list of 12 elements detailed as
+The second element of the list is \code{res}, a list of 13 elements detailed as
 
+\item{p}{quantile(s) fitted.}
 \item{iter}{number of iterations.}
 \item{criteria}{attained criteria value.}
 \item{nlmodel}{the proposed nonlinear function.}
@@ -133,14 +136,14 @@ The second element of the list is \code{res}, a list of 12 elements detailed as
 \item{time}{processing time.}
 }
 \references{
-Galarza, C.E., Castro, L.M., Louzada, F. et al. (2020) Quantile regression for nonlinear mixed effects models: a likelihood based perspective. Stat Papers 61, 1281-1307.
+Galarza, C.E., Castro, L.M., Louzada, F. & Lachos, V. (2020) Quantile regression for nonlinear mixed effects models: a likelihood based perspective. Stat Papers 61, 1281-1307.
 \doi{10.1007/s00362-018-0988-y}
 
 Delyon, B., Lavielle, M. & Moulines, E. (1999). Convergence of a stochastic approximation version of the EM algorithm. Annals of Statistics, pages 94-128.
 }
 \author{
-Christian E. Galarza <\email{cgalarza88@gmail.com}> and 
-Victor H. Lachos <\email{hlachos@ime.unicamp.br}>
+Christian E. Galarza <\email{chedgala@espol.edu.ec}> and 
+Victor H. Lachos <\email{hlachos@uconn.edu}>
 }
 \note{
 If a grid of quantiles was provided, the result is a list of the same dimension where each element corresponds to each quantile as detailed above.

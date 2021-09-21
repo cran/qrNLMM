@@ -1,4 +1,8 @@
-QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxIter=500,M=20,cp=0.25,beta=NA,sigma=NA,Psi=NA,show.convergence=TRUE,CI=95)
+QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
+                  precision=0.0001,MaxIter=500,M=20,cp=0.25,
+                  beta=NA,sigma=NA,Psi=NA,
+                  show.convergence=TRUE,CI=95,
+                  verbose=TRUE)
 {
   if(any(is.na(groups)==TRUE)) stop("There are some NA's values in groups")
   if(length(y) != length(groups)) stop("groups does not match with  the provided data. (length(y) != length(groups))")
@@ -56,7 +60,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     if(is.numeric(initial) == FALSE) stop("The vector of initial parameter must be of class numeric.")
     
     #Validating supports
-    if(p >= 1 | p <= 0) stop("p must be a real number in (0,1)")
+    if(p > 1 | p < 0) stop("p must be a real number in (0,1)")
     if(precision <= 0) stop("precision must be a positive value (suggested to be small)")
     if(MaxIter <= 0 |MaxIter%%1!=0) stop("MaxIter must be a positive integer value")
     if(M <= 0 |M%%1!=0) stop("M must be a positive integer value >= 10")
@@ -76,7 +80,6 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     if(is.na(sigma) == FALSE)
     {if(sigma <= 0 | length(sigma)!=1) stop("sigma must be a positive real number")}
     
-    #Load required libraries
     
     if(is.na(Psi) == FALSE)
     {  
@@ -84,8 +87,16 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       if(det(Psi)<=0) stop("Psi must be a square symmetrical real posite definite matrix.") 
     }
     
-    nlmodel = eval(parse(text = paste("function(x,fixed,random,covar=NA){resp = ",exprNL,";return(resp)}",sep="")))
+    exprNL0 = exprNL
+    inter  = paste("function(x,fixed,random,covar=NA){resp = ",exprNL0,";return(resp)}",sep="")
+    nlmodel0 = nlmodel = eval(parse(text = inter))
     
+    if(nc > 0){
+      exprNL = gsub('covar\\[','covar\\[,',as.character(exprNL))
+      inter = paste("function(x,fixed,random,covar){resp = ",
+                    exprNL,";return(resp)}",sep="")
+      nlmodel = eval(parse(text = inter))
+    }
     
     #intial values
     if(is.na(beta) == TRUE && is.na(sigma) == TRUE)
@@ -107,72 +118,75 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     if(is.na(Psi) == TRUE){Psi      = diag(q)}
     
     #Running the algorithm
-    out <- QSAEM_NL(y = y,x = x,nj = nj,initial = initial,exprNL = exprNL,covar = covar,p = p,precision = precision,M=M,pc=cp,MaxIter=MaxIter,beta = beta,sigmae = sigmae,D=Psi,nlmodel=nlmodel,d=d,q=q)
+    out <- QSAEM_NL(y = y,x = x,nj = nj,initial = initial,exprNL = exprNL0,covar = covar,p = p,precision = precision,M=M,pc=cp,MaxIter=MaxIter,beta = beta,sigmae = sigmae,D=Psi,nlmodel=nlmodel0,d=d,q=q)
     
-    cat('\n')
-    cat('---------------------------------------------------\n')
-    cat('Quantile Regression for Nonlinear Mixed Model\n')
-    cat('---------------------------------------------------\n')
-    cat('\n')
-    cat("Quantile =",p)
-    cat('\n')
-    cat("Subjects =",length(nj),";",'Observations =',sum(nj),
-        ifelse(sum(nj==nj[1])==length(nj),'; Balanced =',""),
-        ifelse(sum(nj==nj[1])==length(nj),nj[1],""))
-    cat('\n')
-    cat('\n')
-    cat('- Nonlinear function \n')
-    cat('\n')
-    cat('nlmodel = function(x,fixed,random,covar=NA){ \n')
-    cat("resp =",as.character(exprNL))
-    cat('\n')
-    cat("return(resp)}")
-    cat('\n')
-    cat('-----------\n')
-    cat('Estimates\n')
-    cat('-----------\n')
-    cat('\n')
-    cat('- Fixed effects \n')
-    cat('\n')
-    print(round(out$res$table,5))
-    cat('\n')
-    cat('sigma =',round(out$res$sigmae,5),'\n')
-    cat('\n')
-        cat('Random effects \n')
-    cat('\n')
-    cat('i) Weights \n')
-    print(round(out$res$weights,5))
-    cat('\n')
-    cat('ii) Variance-Covariance Matrix \n')
-    dimnames(out$res$D) <- list(namesz,namesz)
-    print(round(out$res$D,5))
-    cat('\n')
-    cat('------------------------\n')
-    cat('Model selection criteria\n')
-    cat('------------------------\n')
-    cat('\n')
-    critFin <- c(out$res$loglik, out$res$AIC, out$res$BIC, out$res$HQ)
-    critFin <- round(t(as.matrix(critFin)),digits=3)
-    dimnames(critFin) <- list(c("Value"),c("Loglik", "AIC", "BIC","HQ"))
-    print(critFin)
-    cat('\n')
-    cat('-------\n')
-    cat('Details\n')
-    cat('-------\n')
-    cat('\n')
-    cat("Convergence reached? =",(out$res$iter < MaxIter))
-    cat('\n')
-    cat('Iterations =',out$res$iter,"/",MaxIter)
-    cat('\n')
-    cat('Criteria =',round(out$res$criterio,5))
-    cat('\n')
-    cat('MC sample =',M)
-    cat('\n')  
-    cat('Cut point =',cp)
-    cat('\n')
-    cat("Processing time =",out$res$time,units(out$res$time))
+    if(verbose){
+      cat('\n')
+      cat('---------------------------------------------------\n')
+      cat('Quantile Regression for Nonlinear Mixed Model\n')
+      cat('---------------------------------------------------\n')
+      cat('\n')
+      cat("Quantile =",p)
+      cat('\n')
+      cat("Subjects =",length(nj),";",'Observations =',sum(nj),
+          ifelse(sum(nj==nj[1])==length(nj),'; Balanced =',""),
+          ifelse(sum(nj==nj[1])==length(nj),nj[1],""))
+      cat('\n')
+      cat('\n')
+      cat('- Nonlinear function \n')
+      cat('\n')
+      cat('nlmodel = \n')
+      cat(as.character(inter))
+      cat('\n')
+      cat("return(resp)}")
+      cat('\n')
+      cat('\n')
+      cat('-----------\n')
+      cat('Estimates\n')
+      cat('-----------\n')
+      cat('\n')
+      cat('- Fixed effects \n')
+      cat('\n')
+      print(round(out$res$table,5))
+      cat('\n')
+      cat('sigma =',round(out$res$sigmae,5),'\n')
+      cat('\n')
+      cat('Random effects \n')
+      cat('\n')
+      cat('i) Weights \n')
+      print(head(round(out$res$weights,5)))
+      cat('\n')
+      cat('ii) Variance-Covariance Matrix \n')
+      dimnames(out$res$D) <- list(namesz,namesz)
+      print(round(out$res$D,5))
+      cat('\n')
+      cat('------------------------\n')
+      cat('Model selection criteria\n')
+      cat('------------------------\n')
+      cat('\n')
+      critFin <- c(out$res$loglik, out$res$AIC, out$res$BIC, out$res$HQ)
+      critFin <- round(t(as.matrix(critFin)),digits=3)
+      dimnames(critFin) <- list(c("Value"),c("Loglik", "AIC", "BIC","HQ"))
+      print(critFin)
+      cat('\n')
+      cat('-------\n')
+      cat('Details\n')
+      cat('-------\n')
+      cat('\n')
+      cat("Convergence reached? =",(out$res$iter < MaxIter))
+      cat('\n')
+      cat('Iterations =',out$res$iter,"/",MaxIter)
+      cat('\n')
+      cat('Criteria =',round(out$res$criterio,5))
+      cat('\n')
+      cat('MC sample =',M)
+      cat('\n')  
+      cat('Cut point =',cp)
+      cat('\n')
+      cat("Processing time =",out$res$time,units(out$res$time))
+    }
     
-    if(show.convergence=="TRUE")
+    if(show.convergence == TRUE)
     {
       cpl = cp*MaxIter
       ndiag  = (q*(1+q)/2)
@@ -192,20 +206,36 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
         abline(v=cpl,lty=2)
       }
     }
+    
     par(mfrow=c(1,1))
     par(mar= c(5, 4, 4, 2) + 0.1)
     
     fitted.values = rep(NA,sum(nj))
     
-    for (j in 1:length(nj)){ 
-      pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
-      rand = as.matrix(out$res$weights)[j,]
-      fitted.values[pos] = nlmodel(x = x[pos],fixed = out$res$beta,random = rand)
+    if(nc == 0){
+      for (j in 1:length(nj)){
+        pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
+        rand = as.matrix(out$res$weights)[j,]
+        fitted.values[pos] = nlmodel(x = x[pos],
+                                     fixed = out$res$beta,
+                                     random = rand)
+      }
+    }else{
+      covar = as.matrix(covar)
+      for (j in 1:length(nj)){
+        pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
+        rand = as.matrix(out$res$weights)[j,]
+        fitted.values[pos] = nlmodel(x = x[pos],
+                                     fixed = out$res$beta,
+                                     random = rand,
+                                     covar = covar[pos,,drop = FALSE])
+      }
     }
     
-    res      = list(iter = out$res$iter,
+    res      = list(p = p,
+                    iter = out$res$iter,
                     criteria = out$res$criterio,
-                    nlmodel = out$res$nlmodel,
+                    nlmodel = nlmodel,
                     beta = out$res$beta,
                     weights = out$res$weights,
                     sigma= out$res$sigmae,
@@ -221,6 +251,8 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
                     time = out$res$time)
     
     
+    par(mfrow=c(1,1))
+    par(mar= c(5, 4, 4, 2) + 0.1)
     obj.out = list(conv=out$conv,res = res)
     class(obj.out)  =  "QRNLMM"
     return(obj.out)  
@@ -258,7 +290,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     if(precision <= 0) stop("precision must be a positive value (suggested to be small)")
     if(MaxIter <= 0 |MaxIter%%1!=0) stop("MaxIter must be a positive integer value")
     if(M <= 0 |M%%1!=0) stop("M must be a positive integer value >= 10")
-    if(cp >= 1 | cp <= 0) stop("cp must be a real number in [0,1]")
+    if(cp > 1 | cp < 0) stop("cp must be a real number in [0,1]")
     if(is.logical(show.convergence) == FALSE) stop("show.convergence must be TRUE or FALSE.")
     
     #Matrix column labels
@@ -267,7 +299,19 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       for(i in 2:q){namesz <- c(namesz, paste("b",i,sep=""))}
     }
     
-    pb2 = tkProgressBar(title = "QRNLMM for several quantiles", min = 0,max = length(p), width = 300)
+    #pb2 = tkProgressBar(title = "QRNLMM for several quantiles",
+    #                    min = 0,max = length(p), width = 300)
+
+    cat("\n")
+    pb2 <- progress_bar$new(
+      format = ":what [:bar] :percent eta: :eta \n",
+      total = length(p),
+      clear = TRUE,
+      width= 60,
+      show_after = 0)
+    
+    #pb2$tick(len = 0,tokens = list(what = "QRNLMM: Preparing"))
+    
     
     #No data
     if(is.na(beta) == FALSE)
@@ -284,7 +328,19 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       if(det(Psi)<=0) stop("Psi must be a square symmetrical real posite definite matrix.") 
     }
     
-    nlmodel = eval(parse(text = paste("function(x,fixed,random,covar=NA){resp = ",exprNL,";return(resp)}",sep="")))
+    
+    exprNL0 = exprNL
+    inter  = paste("function(x,fixed,random,covar=NA){resp = ",exprNL0,";return(resp)}",sep="")
+    nlmodel0 = nlmodel = eval(parse(text = inter))
+    
+    if(nc > 0){
+      exprNL = gsub('covar\\[','covar\\[,',as.character(exprNL))
+      inter = paste("function(x,fixed,random,covar){resp = ",
+                    exprNL,";return(resp)}",sep="")
+      nlmodel = eval(parse(text = inter))
+    }
+    
+    #nlmodel = eval(parse(text = paste("function(x,fixed,random,covar=NA){resp = ",exprNL,";return(resp)}",sep="")))
     
     #intial values
     if(is.na(beta) == TRUE && is.na(sigma) == TRUE)
@@ -303,90 +359,111 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       OPT = optim(par = beta,fn = minbeta,y=y,x=x,covar=covar,p=p[1],q=q,nlmodel=nlmodel)
       sigmae = (1/length(y))*OPT$value
     }
-    if(is.na(Psi) == TRUE){Psi      = diag(q)}
+    if(is.na(Psi) == TRUE){Psi = diag(q)}
     
     for(k in 1:length(p))
     {
-      setTkProgressBar(pb2, k-1, label=paste("Running quantile ",p[k],"   -   ",k-1,"/",length(p),"   -   ",round((k-1)/length(p)*100,0),"% done",sep = ""))
+      #setTkProgressBar(pb2, k-1, label=paste("Running quantile ",p[k],"   -   ",k-1,"/",length(p),sep = ""))
       
       #Running the algorithm
-      out <- QSAEM_NL(y = y,x = x,nj = nj,initial = initial,exprNL = exprNL,covar = covar,p = p[k],precision = precision,M=M,pc=cp,MaxIter=MaxIter,beta = beta,sigmae = sigmae,D=Psi,nlmodel=nlmodel,d=d,q=q)
       
-      cat('\n')
-      cat('---------------------------------------------------\n')
-      cat('Quantile Regression for Nonlinear Mixed Model\n')
-      cat('---------------------------------------------------\n')
-      cat('\n')
-      cat("Quantile =",p[k])
-      cat('\n')
-      cat("Subjects =",length(nj),";",'Observations =',sum(nj),
-          ifelse(sum(nj==nj[1])==length(nj),'; Balanced =',""),
-          ifelse(sum(nj==nj[1])==length(nj),nj[1],""))
-      cat('\n')
-      cat('\n')
-      cat('- Nonlinear function \n')
-      cat('\n')
-      cat('nlmodel = function(x,fixed,random,covar=NA){ \n')
-      cat("resp =",as.character(exprNL))
-      cat('\n')
-      cat("return(resp)}")
-      cat('\n')
-      cat('-----------\n')
-      cat('Estimates\n')
-      cat('-----------\n')
-      cat('\n')
-      cat('- Fixed effects \n')
-      cat('\n')
-      print(round(out$res$table,5))
-      cat('\n')
-      cat('sigma =',round(out$res$sigmae,5),'\n')
-      cat('\n')
-      cat('Random effects \n')
-      cat('\n')
-      cat('i) Weights \n')
-      print(round(out$res$weights,5))
-      cat('\n')
-      cat('ii) Variance-Covariance Matrix \n')
-      dimnames(out$res$D) <- list(namesz,namesz)
-      print(round(out$res$D,5))
-      cat('\n')
-      cat('------------------------\n')
-      cat('Model selection criteria\n')
-      cat('------------------------\n')
-      cat('\n')
-      critFin <- c(out$res$loglik, out$res$AIC, out$res$BIC, out$res$HQ)
-      critFin <- round(t(as.matrix(critFin)),digits=3)
-      dimnames(critFin) <- list(c("Value"),c("Loglik", "AIC", "BIC","HQ"))
-      print(critFin)
-      cat('\n')
-      cat('-------\n')
-      cat('Details\n')
-      cat('-------\n')
-      cat('\n')
-      cat("Convergence reached? =",(out$res$iter < MaxIter))
-      cat('\n')
-      cat('Iterations =',out$res$iter,"/",MaxIter)
-      cat('\n')
-      cat('Criteria =',round(out$res$criterio,5))
-      cat('\n')
-      cat('MC sample =',M)
-      cat('\n')  
-      cat('Cut point =',cp)
-      cat('\n')
-      cat("Processing time =",out$res$time,units(out$res$time))
-      cat('\n')
+      pb2$tick(k-1,tokens = list(what = "QRNLMM: Total progress  "))
+      
+      out <- QSAEM_NL(y = y,x = x,nj = nj,initial = initial,exprNL = exprNL0,covar = covar,p = p[k],precision = precision,M=M,pc=cp,MaxIter=MaxIter,beta = beta,sigmae = sigmae,D=Psi,nlmodel=nlmodel0,d=d,q=q)
+      
+      if(verbose){
+        cat('\n')
+        cat('---------------------------------------------------\n')
+        cat('Quantile Regression for Nonlinear Mixed Model\n')
+        cat('---------------------------------------------------\n')
+        cat('\n')
+        cat("Quantile =",p[k])
+        cat('\n')
+        cat("Subjects =",length(nj),";",'Observations =',sum(nj),
+            ifelse(sum(nj==nj[1])==length(nj),'; Balanced =',""),
+            ifelse(sum(nj==nj[1])==length(nj),nj[1],""))
+        cat('\n')
+        cat('\n')
+        cat('- Nonlinear function \n')
+        cat('\n')
+        cat('nlmodel = \n')
+        cat(as.character(inter))
+        cat('\n')
+        cat("return(resp)}")
+        cat('\n')
+        cat('\n')
+        cat('-----------\n')
+        cat('Estimates\n')
+        cat('-----------\n')
+        cat('\n')
+        cat('- Fixed effects \n')
+        cat('\n')
+        print(round(out$res$table,5))
+        cat('\n')
+        cat('sigma =',round(out$res$sigmae,5),'\n')
+        cat('\n')
+        cat('Random effects \n')
+        cat('\n')
+        cat('i) Weights \n')
+        print(head(round(out$res$weights,5)))
+        cat('\n')
+        cat('ii) Variance-Covariance Matrix \n')
+        dimnames(out$res$D) <- list(namesz,namesz)
+        print(round(out$res$D,5))
+        cat('\n')
+        cat('------------------------\n')
+        cat('Model selection criteria\n')
+        cat('------------------------\n')
+        cat('\n')
+        critFin <- c(out$res$loglik, out$res$AIC, out$res$BIC, out$res$HQ)
+        critFin <- round(t(as.matrix(critFin)),digits=3)
+        dimnames(critFin) <- list(c("Value"),c("Loglik", "AIC", "BIC","HQ"))
+        print(critFin)
+        cat('\n')
+        cat('-------\n')
+        cat('Details\n')
+        cat('-------\n')
+        cat('\n')
+        cat("Convergence reached? =",(out$res$iter < MaxIter))
+        cat('\n')
+        cat('Iterations =',out$res$iter,"/",MaxIter)
+        cat('\n')
+        cat('Criteria =',round(out$res$criterio,5))
+        cat('\n')
+        cat('MC sample =',M)
+        cat('\n')  
+        cat('Cut point =',cp)
+        cat('\n')
+        cat("Processing time =",out$res$time,units(out$res$time))
+        cat('\n')
+      }
       
       fitted.values = rep(NA,sum(nj))
       
-      for (j in 1:length(nj)){ 
-        pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
-        rand = as.matrix(out$res$weights)[j,]
-        fitted.values[pos] = nlmodel(x = x[pos],fixed = out$res$beta,random = rand)
+      if(nc == 0){
+        for (j in 1:length(nj)){
+          pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
+          rand = as.matrix(out$res$weights)[j,]
+          fitted.values[pos] = nlmodel(x = x[pos],
+                                       fixed = out$res$beta,
+                                       random = rand)
+        }
+      }else{
+        covar = as.matrix(covar)
+        for (j in 1:length(nj)){
+          pos = (sum(nj[1:j-1])+1):(sum(nj[1:j]))
+          rand = as.matrix(out$res$weights)[j,]
+          fitted.values[pos] = nlmodel(x = x[pos],
+                                       fixed = out$res$beta,
+                                       random = rand,
+                                       covar = covar[pos,,drop = FALSE])
+        }
       }
-    
-      res      = list(iter = out$res$iter,
+      
+      res      = list(p = p[k],
+                      iter = out$res$iter,
                       criteria = out$res$criterio,
-                      nlmodel = out$res$nlmodel,
+                      nlmodel = nlmodel,
                       beta = out$res$beta,
                       weights = out$res$weights,
                       sigma= out$res$sigmae,
@@ -408,7 +485,10 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       sigmae = out$res$sigmae
       Psi    = out$res$D
     }
-    close(pb2)
+    
+    pb2$terminate()
+    
+    #close(pb2)
     
     par(mfrow=c(1,1))
     betas = eps = matrix(NA,length(p),d+1)
@@ -460,7 +540,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
       }
     }
     title("Point estimative and 95% CI for model parameters", outer=TRUE)
-
+    
     
     if(show.convergence=="TRUE")
     {
@@ -496,4 +576,6 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,precision=0.0001,MaxI
     class(obj.out)  =  "QRNLMM"
     return(obj.out)
   }
+  par(mfrow=c(1,1))
+  par(mar= c(5, 4, 4, 2) + 0.1)
 }
