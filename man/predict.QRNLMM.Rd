@@ -127,7 +127,7 @@ results = qrNLMM::QRNLMM(
 
 # now we select two random subjects from original data
 set.seed(19)
-index = Plot %in% sample(Plot,size = 2)
+index = Plot \%in\% sample(Plot,size = 2)
 index2 = c(1,diff(as.numeric(Plot)))>0 & index
 
 # 1. Original dataset

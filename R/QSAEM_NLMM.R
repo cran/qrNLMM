@@ -11,7 +11,7 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   delta1 = 0.001
   delta2 = precision
   
-  #assimetry
+  #assymetry
   vp = (1-2*p)/(p*(1-p))
   tp = sqrt(2/(p*(1-p)))
   

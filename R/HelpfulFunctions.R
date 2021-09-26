@@ -1,4 +1,12 @@
 
+# library(mvtnorm)
+# library(psych)
+# library(tcltk)
+# library(ald)
+# library(lqr)
+# library(psych)
+# library(progress)
+
 sqrtm <- function(A)
 {
   if(length(A)==1)
