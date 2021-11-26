@@ -163,7 +163,7 @@
         }else{
           
           chutebi0 = chutebi = rep(0,q)
-          chutebibi0 = chutebibi = object$res$Psi/n # bibi^T
+          chutebibi0 = chutebibi = object$res$Psi # bibi^T
           
           bmetro = matrix(MHbi3(j=j,M=MC,
                                 y1 = y[pos],x1 = x[pos],
@@ -292,7 +292,7 @@
           
           
           chutebi0 = chutebi = rep(0,q)
-          chutebibi0 = chutebibi = object$res$Psi/n # bibi^T
+          chutebibi0 = chutebibi = object$res$Psi # bibi^T
           
           bmetro = matrix(MHbi3(j=j,M=MC,
                                 y1 = y[pos],x1 = x[pos],

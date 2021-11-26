@@ -1,8 +1,8 @@
 Package: qrNLMM
 Type: Package
 Title: Quantile Regression for Nonlinear Mixed-Effects Models
-Version: 3.1
-Date: 2021-09-24
+Version: 3.2
+Date: 2021-11-25
 Author: Christian E. Galarza <chedgala@espol.edu.ec> and Victor H. Lachos <hlachos@uconn.edu>
 Maintainer: Christian E. Galarza <cgalarza88@gmail.com>
 Imports: mvtnorm, lqr, quantreg, psych, ald, progress
@@ -16,6 +16,6 @@ Description: Quantile regression (QR) for Nonlinear
              convergence and fitting results.
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2021-09-25 00:42:48 UTC; cgala
+Packaged: 2021-11-26 01:40:14 UTC; cgala
 Repository: CRAN
-Date/Publication: 2021-09-26 15:10:05 UTC
+Date/Publication: 2021-11-26 14:30:02 UTC
