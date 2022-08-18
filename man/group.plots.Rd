@@ -33,8 +33,7 @@ additional graphical arguments passed to \code{\link[graphics]{matplot}}. See \c
 Christian E. Galarza <\email{chedgala@espol.edu.ec}> and 
 Victor H. Lachos <\email{hlachos@uconn.edu}>
 }
-\seealso{\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link{QRNLMM}},
-\code{\link[qrLMM]{QRLMM}}
+\seealso{\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link{QRNLMM}}
 }
 
 \examples{

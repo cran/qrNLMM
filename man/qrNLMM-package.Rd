@@ -36,7 +36,7 @@ Yu, K., & Zhang, J. (2005). A three-parameter asymmetric Laplace distribution an
 \keyword{quantile}
 \keyword{ALD}
 \seealso{\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link{QRNLMM}},
-\code{\link[lqr]{lqr}}, \code{\link[qrLMM]{QRLMM}}, \code{\link{group.plots}}
+\code{\link[lqr]{lqr}} , \code{\link{group.plots}}
 }
 \examples{
 #See examples for the QRNLMM function linked above.

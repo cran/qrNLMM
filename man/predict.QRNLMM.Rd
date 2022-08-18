@@ -81,7 +81,7 @@ Victor H. Lachos <\email{hlachos@uconn.edu}>
 }
 
 \seealso{
-\code{\link{QRNLMM}},\code{\link[qrLMM]{QRLMM}}, \code{\link{group.plots}},\code{\link{group.lines}},\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link[lqr]{lqr}}
+\code{\link{QRNLMM}},\code{\link{group.plots}},\code{\link{group.lines}},\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link[lqr]{lqr}}
 }
 
 \examples{

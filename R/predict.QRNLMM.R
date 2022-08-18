@@ -2,7 +2,7 @@
   
   thin = 5
   
-  if(class(object) != "QRNLMM")
+  if(!inherits(object,"QRNLMM"))
     stop("The object must be an object of the class QRNLMM.")
   
   if(is.null(x) & is.null(groups) & is.null(covar) & is.null(y)){

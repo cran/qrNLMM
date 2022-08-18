@@ -150,7 +150,7 @@ If a grid of quantiles was provided, the result is a list of the same dimension 
 }
 
 \seealso{
-\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link[lqr]{lqr}}, \code{\link[qrLMM]{QRLMM}}, \code{\link{group.plots}}
+\code{\link{Soybean}}, \code{\link{HIV}}, \code{\link[lqr]{lqr}} , \code{\link{group.plots}}
 }
 \examples{
 \dontrun{
