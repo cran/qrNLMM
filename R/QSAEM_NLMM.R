@@ -1,9 +1,16 @@
-QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20,pc=0.25,MaxIter=500,beta,sigmae,D,nlmodel,d,q)
-{
+#library(mvtnorm); library(lqr); library(quantreg); library(psych); library(ald); library(progress)
+
+QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,
+                    precision = 0.0001,M=20,pc=0.25,MaxIter=500,
+                    beta,sigmae,D,nlmodel,d,q){
+  
   start.time <- Sys.time()
   
   n = length(nj)
   N = sum(nj)
+  
+  beta = c(1.24332278, -0.03787132,  1.42456439,  0.02953380,  0.40366525,
+           2.67806346,  0.03564155)
   
   #NEW CODE
   if(all(is.na(covar)==TRUE)){n.covar = 0}else{n.covar = dim(covar)[2]}
@@ -38,12 +45,9 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   
   EPV      = matrix(0,nrow = npar,ncol = MaxIter)
   
-  if(pc==1)
-  {
+  if(pc==1){
     seqq=rep(1,pc*MaxIter)
-  }else
-    
-  {
+  }else{
     seqq = c(rep(1,pc*MaxIter),(1/((((pc*MaxIter)+1):MaxIter)-(pc*MaxIter))))
     seqq = c(rep(1,MaxIter-length(seqq)),seqq)
   }
@@ -86,6 +90,8 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
     
     for (j in 1:n)
     { 
+      print(j)
+      
       y1  = y[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
       x1  = matrix(x[(sum(nj[1:j-1])+1):(sum(nj[1:j])),],ncol=1)
       if(n.covar>0){cov1 = matrix(covar[(sum(nj[1:j-1])+1):(sum(nj[1:j])),],ncol=n.covar)}
@@ -182,7 +188,12 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
     
     param    = teta
     teta     = c(beta,sigmae,D[upper.tri(D, diag = T)])
+    
     criterio = abs(teta-param)/(abs(param)+delta1)
+    
+    print(teta)
+    print(criterio)
+    
     if(max(criterio) < delta2){critval=critval+1}else{critval=0}
     #PRUEBAS
     #############################################################################
@@ -218,8 +229,7 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
   conv    = list(teta = tetam[,1:count],EPV = EPV[,1:count])
   obj.out = list(conv=conv,res = res)
   
-  if  (count == MaxIter)
-  {
+  if  (count == MaxIter){
     #setTkProgressBar(pb, MaxIter, label=paste("MaxIter reached ",count,"/",MaxIter,"    -    100 % done",sep = ""))
     #Sys.sleep(2)
     #close(pb)
@@ -243,7 +253,6 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,precision = 0.0001,M=20
     
     cat("\n")
     #cat("\n")
-    
   }
   
   class(obj.out)  =  "QSAEM_NL"

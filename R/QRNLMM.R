@@ -105,17 +105,19 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
       beta = OPT$par
       sigmae = (1/length(y))*OPT$value
     }
-    if(is.na(beta) == TRUE && is.na(sigma) == FALSE)
+    if(all(is.na(beta) == TRUE & is.na(sigma) == FALSE))
     {
-      OPT = optim(par = initial,fn = minbeta,y=y,x=x,covar=covar,p=p,q=q,nlmodel=nlmodel)
+      OPT = optim(par = initial,fn = minbeta,y=y,x=x,
+                  covar=covar,p=p,q=q,nlmodel=nlmodel)
       beta = OPT$par
     }
     if(is.na(beta) == FALSE && is.na(sigma) == TRUE)
     {
-      OPT = optim(par = beta,fn = minbeta,y=y,x=x,covar=covar,p=p,q=q,nlmodel=nlmodel)
+      OPT = optim(par = beta,fn = minbeta,y=y,x=x,
+                  covar=covar,p=p,q=q,nlmodel=nlmodel)
       sigmae = (1/length(y))*OPT$value
     }
-    if(is.na(Psi) == TRUE){Psi      = diag(q)}
+    if(is.na(Psi) == TRUE){Psi = diag(q)}
     
     #Running the algorithm
     out <- QSAEM_NL(y = y,x = x,nj = nj,initial = initial,exprNL = exprNL0,covar = covar,p = p,precision = precision,M=M,pc=cp,MaxIter=MaxIter,beta = beta,sigmae = sigmae,D=Psi,nlmodel=nlmodel0,d=d,q=q)
@@ -349,7 +351,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
       beta = OPT$par
       sigmae = (1/length(y))*OPT$value
     }
-    if(is.na(beta) == TRUE && is.na(sigma) == FALSE)
+    if(all(is.na(beta) == TRUE & is.na(sigma) == FALSE))
     {
       OPT = optim(par = initial,fn = minbeta,y=y,x=x,covar=covar,p=p[1],q=q,nlmodel=nlmodel)
       beta = OPT$par
