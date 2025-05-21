@@ -38,6 +38,13 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
   if(length(p)==1)
   {
     ## Verify error at parameters specification
+    # Validacion de las dimensiones de x, groups y covar (by Gemini)
+    if (any(is.na(covar))) {
+      # Code to execute if any element of covar is NA
+      if (length(groups) != nrow(as.matrix(x))) {
+        stop("x variable does not have the same number of rows as groups.")
+      }
+    }
     
     #No data
     if( (length(x) == 0) | (length(y) == 0)) stop("All parameters must be provided.")
@@ -73,18 +80,27 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
       for(i in 2:q){namesz <- c(namesz, paste("b",i,sep=""))}
     }
     
-    #No data
-    if(is.na(beta) == FALSE)
-    {if(length(beta) != d) stop("beta must have dimensions equal to the number of fixed effects declared in exprNL.")}
+    # No data
+    if (!all(is.na(beta))) {
+      if (length(beta) != d) {
+        stop("beta must have dimensions equal to the number of fixed effects declared in exprNL.")
+      }
+    }
     
-    if(is.na(sigma) == FALSE)
-    {if(sigma <= 0 | length(sigma)!=1) stop("sigma must be a positive real number")}
+    if (!is.na(sigma)) {
+      if (sigma <= 0 || length(sigma) != 1) {
+        stop("sigma must be a positive real number")
+      }
+    }
     
     
-    if(is.na(Psi) == FALSE)
-    {  
-      if(ncol(as.matrix(Psi)) != q | nrow(as.matrix(Psi)) != q) stop("Psi must be a square matrix of dims equal to the number of random effects declared in exprNL.")
-      if(det(Psi)<=0) stop("Psi must be a square symmetrical real posite definite matrix.") 
+    if (!all(is.na(Psi))) {
+      if (ncol(as.matrix(Psi)) != q | nrow(as.matrix(Psi)) != q) {
+        stop("Psi must be a square matrix of dims equal to the number of random effects declared in exprNL.")
+      }
+      if (det(Psi) <= 0) {
+        stop("Psi must be a square symmetrical real positive definite matrix.")
+      }
     }
     
     exprNL0 = exprNL
@@ -93,31 +109,36 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
     
     if(nc > 0){
       exprNL = gsub('covar\\[','covar\\[,',as.character(exprNL))
-      inter = paste("function(x,fixed,random,covar){resp = ",
+      inter = paste("function(x,fixed,random,covar){covar=as.matrix(covar);resp = ",
                     exprNL,";return(resp)}",sep="")
       nlmodel = eval(parse(text = inter))
     }
     
-    #intial values
-    if(is.na(beta) == TRUE && is.na(sigma) == TRUE)
-    {
-      OPT = optim(par = initial,fn = minbeta,y=y,x=x,covar=covar,p=p,q=q,nlmodel=nlmodel)
-      beta = OPT$par
-      sigmae = (1/length(y))*OPT$value
+    # Initial values
+    
+    # Case 1:  beta and sigma are both NA
+    if (all(is.na(beta)) && is.na(sigma)) {
+      OPT <- optim(par = initial, fn = minbeta, y = y, x = x, covar = covar, p = p, q = q, nlmodel = nlmodel)
+      beta <- OPT$par
+      sigmae <- (1 / length(y)) * OPT$value
     }
-    if(all(is.na(beta) == TRUE & is.na(sigma) == FALSE))
-    {
-      OPT = optim(par = initial,fn = minbeta,y=y,x=x,
-                  covar=covar,p=p,q=q,nlmodel=nlmodel)
-      beta = OPT$par
+    
+    # Case 2: beta is NA, sigma is not NA
+    if (all(is.na(beta)) && !is.na(sigma)) {
+      OPT <- optim(par = initial, fn = minbeta, y = y, x = x, covar = covar, p = p, q = q, nlmodel = nlmodel)
+      beta <- OPT$par
     }
-    if(is.na(beta) == FALSE && is.na(sigma) == TRUE)
-    {
-      OPT = optim(par = beta,fn = minbeta,y=y,x=x,
-                  covar=covar,p=p,q=q,nlmodel=nlmodel)
-      sigmae = (1/length(y))*OPT$value
+    
+    # Case 3: beta is not NA, sigma is NA
+    if (all(!is.na(beta)) && is.na(sigma)) {
+      OPT <- optim(par = beta, fn = minbeta, y = y, x = x, covar = covar, p = p, q = q, nlmodel = nlmodel)
+      sigmae <- (1 / length(y)) * OPT$value
     }
-    if(is.na(Psi) == TRUE){Psi = diag(q)}
+    
+    # Default value for Psi if it is NA
+    if (all(is.na(Psi))) {
+      Psi <- diag(q)
+    }
     
     #Running the algorithm
     out <- QSAEM_NL(y = y,x = x,nj = nj,initial = initial,exprNL = exprNL0,covar = covar,p = p,precision = precision,M=M,pc=cp,MaxIter=MaxIter,beta = beta,sigmae = sigmae,D=Psi,nlmodel=nlmodel0,d=d,q=q)
@@ -288,7 +309,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
     if(is.numeric(initial) == FALSE) stop("The vector of initial parameter must be of class numeric.")
     
     #Validating supports
-    if(all(p > 0 && p < 1) == FALSE) stop("p vector must contain real values in (0,1)")
+    if (!all(p > 0 & p < 1)) stop("p vector must contain real values in (0,1)")
     if(precision <= 0) stop("precision must be a positive value (suggested to be small)")
     if(MaxIter <= 0 |MaxIter%%1!=0) stop("MaxIter must be a positive integer value")
     if(M <= 0 |M%%1!=0) stop("M must be a positive integer value >= 10")
@@ -315,19 +336,29 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
     #pb2$tick(len = 0,tokens = list(what = "QRNLMM: Preparing"))
     
     
-    #No data
-    if(is.na(beta) == FALSE)
-    {if(length(beta) != d) stop("beta must have dimensions equal to the number of fixed effects declared in exprNL.")}
+    # No data
+    if (!all(is.na(beta))) { # Corrected: Check if *all* are not NA
+      if (length(beta) != d) {
+        stop("beta must have dimensions equal to the number of fixed effects declared in exprNL.")
+      }
+    }
     
-    if(is.na(sigma) == FALSE)
-    {if(sigma <= 0 | length(sigma)!=1) stop("sigma must be a positive real number")}
+    if (!is.na(sigma)) { # Corrected:  scalar check is OK
+      if (sigma <= 0 || length(sigma) != 1) {
+        stop("sigma must be a positive real number")
+      }
+    }
     
-    #Load required libraries
+    # Load required libraries (No changes needed here, but good practice to have)
+    #  (Assumed this is handled elsewhere, but if needed, libraries are loaded with library())
     
-    if(is.na(Psi) == FALSE)
-    {  
-      if(ncol(as.matrix(Psi)) != q | nrow(as.matrix(Psi)) != q) stop("Psi must be a square matrix of dims equal to the number of random effects declared in exprNL.")
-      if(det(Psi)<=0) stop("Psi must be a square symmetrical real posite definite matrix.") 
+    if (!all(is.na(Psi))) { # Corrected: Check if *all* are not NA
+      if (ncol(as.matrix(Psi)) != q | nrow(as.matrix(Psi)) != q) {
+        stop("Psi must be a square matrix of dims equal to the number of random effects declared in exprNL.")
+      }
+      if (det(Psi) <= 0) {
+        stop("Psi must be a square symmetrical real positive definite matrix.")
+      }
     }
     
     
@@ -337,31 +368,38 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
     
     if(nc > 0){
       exprNL = gsub('covar\\[','covar\\[,',as.character(exprNL))
-      inter = paste("function(x,fixed,random,covar){resp = ",
+      inter = paste("function(x,fixed,random,covar){covar = as.matrix(covar);resp = ",
                     exprNL,";return(resp)}",sep="")
       nlmodel = eval(parse(text = inter))
     }
     
     #nlmodel = eval(parse(text = paste("function(x,fixed,random,covar=NA){resp = ",exprNL,";return(resp)}",sep="")))
     
-    #intial values
-    if(is.na(beta) == TRUE && is.na(sigma) == TRUE)
-    {
-      OPT = optim(par = initial,fn = minbeta,y=y,x=x,covar=covar,p=p[1],q=q,nlmodel=nlmodel)
-      beta = OPT$par
-      sigmae = (1/length(y))*OPT$value
+    # Initial values
+    
+    # Case 1: beta and sigma are both NA
+    if (all(is.na(beta)) && is.na(sigma)) {
+      OPT <- optim(par = initial, fn = minbeta, y = y, x = x, covar = covar, p = p[1], q = q, nlmodel = nlmodel)
+      beta <- OPT$par
+      sigmae <- (1 / length(y)) * OPT$value
     }
-    if(all(is.na(beta) == TRUE & is.na(sigma) == FALSE))
-    {
-      OPT = optim(par = initial,fn = minbeta,y=y,x=x,covar=covar,p=p[1],q=q,nlmodel=nlmodel)
-      beta = OPT$par
+    
+    # Case 2: beta is NA, sigma is not NA
+    if (all(is.na(beta)) && !is.na(sigma)) {
+      OPT <- optim(par = initial, fn = minbeta, y = y, x = x, covar = covar, p = p[1], q = q, nlmodel = nlmodel)
+      beta <- OPT$par
     }
-    if(is.na(beta) == FALSE && is.na(sigma) == TRUE)
-    {
-      OPT = optim(par = beta,fn = minbeta,y=y,x=x,covar=covar,p=p[1],q=q,nlmodel=nlmodel)
-      sigmae = (1/length(y))*OPT$value
+    
+    # Case 3: beta is not NA, sigma is NA
+    if (all(!is.na(beta)) && is.na(sigma)) {
+      OPT <- optim(par = beta, fn = minbeta, y = y, x = x, covar = covar, p = p[1], q = q, nlmodel = nlmodel)
+      sigmae <- (1 / length(y)) * OPT$value
     }
-    if(is.na(Psi) == TRUE){Psi = diag(q)}
+    
+    # Default value for Psi if it is NA
+    if (all(is.na(Psi))) {
+      Psi <- diag(q)
+    }
     
     for(k in 1:length(p))
     {
@@ -437,6 +475,7 @@ QRNLMM = function(y,x,groups,initial,exprNL,covar=NA,p=0.5,
         cat('Cut point =',cp)
         cat('\n')
         cat("Processing time =",out$res$time,units(out$res$time))
+        cat('\n')
         cat('\n')
       }
       

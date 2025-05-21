@@ -1,20 +1,30 @@
 Package: qrNLMM
 Type: Package
 Title: Quantile Regression for Nonlinear Mixed-Effects Models
-Version: 3.4
-Date: 2024-07-12
-Author: Christian E. Galarza <chedgala@espol.edu.ec> and Victor H. Lachos <hlachos@uconn.edu>
+Version: 4.0
+Date: 2025-05-21
+Authors@R: c(person(given = c("Christian", "E."),
+                      family = "Galarza",
+                      role = c("aut", "cre"),
+                      email = "cgalarza88@gmail.com"),
+               person(given = c("Victor", "H."),
+                      family = "Lachos",
+                      role = "aut",
+                      email = "hlachos@uconn.edu"))
 Maintainer: Christian E. Galarza <cgalarza88@gmail.com>
 Imports: mvtnorm, lqr, quantreg, psych, ald, progress
 Description: Quantile regression (QR) for Nonlinear
              Mixed-Effects Models via the asymmetric Laplace distribution (ALD). 
              It uses the Stochastic Approximation of the EM (SAEM) algorithm for 
-             deriving exact maximum likelihood estimates and full inference results 
+             deriving exact maximum likelihood estimates and full inference result
+             is 
              for the fixed-effects and variance components.
              It also provides prediction and graphical summaries for assessing the algorithm
              convergence and fitting results.
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2024-07-12 19:31:02 UTC; cgala
+Packaged: 2025-05-21 17:54:40 UTC; chedgala
+Author: Christian E. Galarza [aut, cre],
+  Victor H. Lachos [aut]
 Repository: CRAN
-Date/Publication: 2024-07-12 19:50:02 UTC
+Date/Publication: 2025-05-21 18:10:02 UTC

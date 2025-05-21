@@ -68,52 +68,63 @@ nlmodel = median_reg$res$nlmodel
 seqc    = seq(min(x),max(x),length.out = 500)
 
 group.plot(x = Time,y = weight,groups = Plot,type="l",
-             main="Soybean profiles",xlab="time (days)",
-             ylab="mean leaf weight (gr)",col="gray")
-             
+           main="Soybean profiles",xlab="time (days)",
+           ylab="mean leaf weight (gr)",col="gray")
+
 lines(seqc,nlmodel(x = seqc,fixed = fxd,random = rep(0,3)),
       lwd=2,col="blue")             
 
 #Histogram for residuals
-hist(median_reg$res$residuals)
+hist(median_reg$res$residuals,breaks = 20)
 
 #########################################
-#A model for comparing the two genotypes (with covariates)
+#A model for compairing the two genotypes
 
 y     = weight          #response
 x     = Time            #time
-covar = c(Variety)-1    #factor genotype (0=Forrest, 1=Plan Introduction)
+covar = as.numeric(Variety)-1    #factor genotype (0=Forrest, 1=Plan Introduction)
 
-#Expression for the three parameter logistic curve with a covariate
-
+#Expression for the three parameter logistic curve with a covariate in the asymp growth
 exprNL = expression((fixed[1]+(fixed[4]*covar[1])+random[1])/
-                    (1 + exp(((fixed[2]+random[2])- x)/(fixed[3]+random[3]))))
+                      (1 + exp(((fixed[2]+random[2])- x)/(fixed[3]+random[3]))))
 
 #Initial values for fixed effects
 initial = c(max(y),0.6*max(y),0.73*max(y),3)
 
-# A quantile regression for the three quartiles
-box_reg = QRNLMM(y,x,Plot,initial,exprNL,covar,p=c(0.25,0.50,0.75))
+# A quantile regression for the three quartiles ()
+box_reg = QRNLMM(y,x,Plot,initial,exprNL,covar,p=c(0.25,0.50,0.75),MaxIter = 20)
 
-#Assing the fit for the median (second quartile)
-
-fxd     = box_reg[[2]]$res$beta
-nlmodel = box_reg[[2]]$res$nlmodel
+# Assing the fit for the first quartile Q1 curve
+fxd_q1    = box_reg[[1]]$res$beta
+fxd_q2    = box_reg[[2]]$res$beta #median
+fxd_q3    = box_reg[[3]]$res$beta
+nlmodel = box_reg[[1]]$res$nlmodel
 seqc    = seq(min(x),max(x),length.out = 500)
 
-group.plot(x = Time[Variety=="P"],y = weight[Variety=="P"],
-             groups = Plot[Variety=="P"],type="l",col="light blue",
-             main="Soybean profiles by genotype",xlab="time (days)",
-             ylab="mean leaf weight (gr)")
-             
-group.lines(x = Time[Variety=="F"],y = weight[Variety=="F"],
-              groups = Plot[Variety=="F"],col="gray")
-             
-lines(seqc,nlmodel(x = seqc,fixed = fxd,random = rep(0,3),covar=1),
-      lwd=2,col="blue")
 
-lines(seqc,nlmodel(x = seqc,fixed = fxd,random = rep(0,3),covar=0),
-      lwd=2,col="black")
+group.plot(x = Time[Variety=="P"],y = weight[Variety=="P"],
+           groups = Plot[Variety=="P"],type="l",col="lightblue",
+           main="Soybean profiles by genotype",xlab="time (days)",
+           ylab="mean leaf weight (gr)")
+
+group.lines(x = Time[Variety=="F"],y = weight[Variety=="F"],
+            groups = Plot[Variety=="F"],col="gray")
+
+# Add the three quantile lines
+lines(seqc,nlmodel(x = seqc, fixed = fxd_q1, random = rep(0, 3), covar = 1),
+      lwd = 2, col = "blue", lty = "dashed") # Q1, dashed
+lines(seqc, nlmodel(x = seqc, fixed = fxd_q2, random = rep(0, 3), covar = 1),
+      lwd = 2, col = "blue")             # Median, solid
+lines(seqc, nlmodel(x = seqc, fixed = fxd_q3, random = rep(0, 3), covar = 1),
+      lwd = 2, col = "blue", lty = "dashed") # Q3, dashed
+
+lines(seqc,nlmodel(x = seqc,fixed = fxd_q1,random = rep(0,3),covar=0),
+      lwd=2,col="black",lty="dashed") #q1
+lines(seqc,nlmodel(x = seqc,fixed = fxd_q2,random = rep(0,3),covar=0),
+      lwd=2,col="black")             # Median
+lines(seqc,nlmodel(x = seqc,fixed = fxd_q3,random = rep(0,3),covar=0),
+      lwd=2,col="black",lty="dashed") #q3
+
 
 }
 }

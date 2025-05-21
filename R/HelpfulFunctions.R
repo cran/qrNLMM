@@ -298,56 +298,78 @@ validate_str = function(prueba)
 ###############################################################################
 
 
-group.plot = function(x,y,groups,...){
-  if(length(y) != length(groups)) stop("groups does not match with  the provided data. (length(y) != length(groups))")
-  if(length(x) != length(groups)) stop("groups does not match with  the provided data. (length(x) != length(groups))")
-  if(length(y) != length(x)) stop("the provided data does not match. (length(y) != length(x))")
-  nj = c(as.data.frame(table(as.factor(c(groups))))[,2])
+group.plot = function(x, y, groups, ...) {
+  if (length(y) != length(groups))
+    stop("groups does not match with the provided data. (length(y) != length(groups))")
+  if (length(x) != length(groups))
+    stop("groups does not match with the provided data. (length(x) != length(groups))")
+  if (length(y) != length(x))
+    stop("the provided data does not match. (length(y) != length(x))")
   
-  Ymatrix = Xmatrix = matrix(data = NA,nrow = length(nj),ncol = max(nj))
+  # Calcular nj DESPUeS de filtrar los datos
+  nj <- as.numeric(table(as.character(groups)))
   
-  for(j in 1:length(nj))
-  {
-    Xmatrix[j,(1:nj[j])] = x[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
-    Ymatrix[j,(1:nj[j])] = y[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
+  Ymatrix = Xmatrix = matrix(data = NA, nrow = length(nj), ncol = max(nj))
+  
+  for (j in 1:length(nj)) {
+    # Corregir el calculo de los indices para que coincidan con los datos filtrados
+    elementos_grupo_j <- which(groups == unique(groups)[j])
+    Xmatrix[j, 1:nj[j]] <- x[elementos_grupo_j]
+    Ymatrix[j, 1:nj[j]] <- y[elementos_grupo_j]
   }
-  matplot(x = t(Xmatrix),y = t(Ymatrix),...)
+  matplot(x = t(Xmatrix), y = t(Ymatrix), ...)
 }
+
 
 #group.plot(x = Time,y = weight,groups = Plot)
 
 
-group.lines = function(x,y,groups,...){
-  if(length(y) != length(groups)) stop("groups does not match with  the provided data. (length(y) != length(groups))")
-  if(length(x) != length(groups)) stop("groups does not match with  the provided data. (length(x) != length(groups))")
-  if(length(y) != length(x)) stop("the provided data does not match. (length(y) != length(x))")
-  nj = c(as.data.frame(table(as.factor(c(groups))))[,2])
-  Ymatrix = Xmatrix = matrix(data = NA,nrow = length(nj),ncol = max(nj))
+group.lines = function(x, y, groups, ...) {
+  if (length(y) != length(groups))
+    stop("groups does not match with the provided data. (length(y) != length(groups))")
+  if (length(x) != length(groups))
+    stop("groups does not match with the provided data. (length(x) != length(groups))")
+  if (length(y) != length(x))
+    stop("the provided data does not match. (length(y) != length(x))")
   
-  for(j in 1:length(nj))
-  {
-    Xmatrix[j,(1:nj[j])] = x[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
-    Ymatrix[j,(1:nj[j])] = y[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
+  # Calculate nj AFTER filtering the data
+  nj <- as.numeric(table(as.character(groups)))
+  
+  Ymatrix = Xmatrix = matrix(data = NA, nrow = length(nj), ncol = max(nj))
+  
+  for (j in 1:length(nj)) {
+    # Correct the index calculation to match the filtered data
+    elementos_grupo_j <- which(groups == unique(groups)[j])
+    Xmatrix[j, 1:nj[j]] <- x[elementos_grupo_j]
+    Ymatrix[j, 1:nj[j]] <- y[elementos_grupo_j]
   }
-  matlines(x = t(Xmatrix),y = t(Ymatrix),...)
+  matlines(x = t(Xmatrix), y = t(Ymatrix), ...)
 }
 
 #group.lines(x = Time,y = weight,groups = Plot)
 
 
-group.points = function(x,y,groups,...){
-  if(length(y) != length(groups)) stop("groups does not match with  the provided data. (length(y) != length(groups))")
-  if(length(x) != length(groups)) stop("groups does not match with  the provided data. (length(x) != length(groups))")
-  if(length(y) != length(x)) stop("the provided data does not match. (length(y) != length(x))")
-  nj = c(as.data.frame(table(as.factor(c(groups))))[,2])
-  Ymatrix = Xmatrix = matrix(data = NA,nrow = length(nj),ncol = max(nj))
+group.points = function(x, y, groups, ...) {
+  if (length(y) != length(groups))
+    stop("groups does not match with the provided data. (length(y) != length(groups))")
+  if (length(x) != length(groups))
+    stop("groups does not match with the provided data. (length(x) != length(groups))")
+  if (length(y) != length(x))
+    stop("the provided data does not match. (length(y) != length(x))")
   
-  for(j in 1:length(nj))
-  {
-    Xmatrix[j,(1:nj[j])] = x[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
-    Ymatrix[j,(1:nj[j])] = y[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
+  # Calculate nj AFTER filtering the data
+  nj <- as.numeric(table(as.character(groups)))
+  
+  Ymatrix = Xmatrix = matrix(data = NA, nrow = length(nj), ncol = max(nj))
+  
+  for (j in 1:length(nj)) {
+    # Correct the index calculation to match the filtered data
+    elementos_grupo_j <- which(groups == unique(groups)[j])
+    Xmatrix[j, 1:nj[j]] <- x[elementos_grupo_j]
+    Ymatrix[j, 1:nj[j]] <- y[elementos_grupo_j]
   }
-  matpoints(x = t(Xmatrix),y = t(Ymatrix),...)
+  matpoints(x = t(Xmatrix), y = t(Ymatrix), ...)
 }
+
 
 #group.points(x = Time,y = weight,groups = Plot)

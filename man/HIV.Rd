@@ -33,27 +33,5 @@ Lachos, V. H., Castro, L. M. & Dey, D. K. (2013). Bayesian inference in nonlinea
 models using normal independent distributions. Computational Statistics & Data Analysis, 64,
 237-252.
 }
-\examples{
-\dontrun{
-data(HIV)
-attach(HIV)
 
-y     = lgviral            #response
-x     = day/100            #time
-covar = cd4/100            #covariate
-
-#Nonlinear model used in Lachos(2013)
-
-#Full Nonlinear expression
-exprNL = expression(log(exp(fixed[1]+random[1])*exp(-(fixed[2]+random[2])*x)+
-                    exp(fixed[3]+random[3])*exp(-(fixed[4]+random[4]+fixed[5]
-                    *covar[1])*x))/log(10))
-
-#Initial values for fixed effects
-initial = c(12,31,6,-2,0.6)
-
-#A median regression (by default)
-median_reg = QRNLMM(y,x,ind,initial,exprNL,covar)
-}
-}
 \keyword{datasets}

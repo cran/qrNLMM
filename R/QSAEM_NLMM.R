@@ -9,8 +9,8 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,
   n = length(nj)
   N = sum(nj)
   
-  beta = c(1.24332278, -0.03787132,  1.42456439,  0.02953380,  0.40366525,
-           2.67806346,  0.03564155)
+  # beta = c(1.24332278, -0.03787132,  1.42456439,  0.02953380,  0.40366525,
+  #          2.67806346,  0.03564155)
   
   #NEW CODE
   if(all(is.na(covar)==TRUE)){n.covar = 0}else{n.covar = dim(covar)[2]}
@@ -90,7 +90,7 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,
     
     for (j in 1:n)
     { 
-      print(j)
+      #print(j)
       
       y1  = y[(sum(nj[1:j-1])+1):(sum(nj[1:j]))]
       x1  = matrix(x[(sum(nj[1:j-1])+1):(sum(nj[1:j])),],ncol=1)
@@ -191,8 +191,8 @@ QSAEM_NL = function(y,x,nj,initial,exprNL,covar=NA,p=0.5,
     
     criterio = abs(teta-param)/(abs(param)+delta1)
     
-    print(teta)
-    print(criterio)
+    #print(teta)
+    #print(criterio)
     
     if(max(criterio) < delta2){critval=critval+1}else{critval=0}
     #PRUEBAS
